@@ -25,7 +25,7 @@ Include your names
 
 Include the tutorial group number
 
-Include your tutorial lecturer's name
+Include your tutorial lecturer's name: Simon Loop
 
 # Part 1 - Identify a Social Problem
 

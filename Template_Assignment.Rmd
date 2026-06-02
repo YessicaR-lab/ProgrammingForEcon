@@ -23,7 +23,7 @@ require(yaml)
 
 Include your names
 
-Include the tutorial group number
+Include the tutorial group number: 5 2
 
 Include your tutorial lecturer's name: Simon Loop
 

@@ -21,7 +21,7 @@ require(yaml)
 
 # Title Page
 
-Include your names: Imane Ouahi, David Abelovic,Xi Hui
+Include your names: Imane Ouahi, David Abelovic, Xi Hui, Let's do it!!!
 
 Include the tutorial group number: 5 2
 

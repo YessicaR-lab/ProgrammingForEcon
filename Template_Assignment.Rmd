@@ -76,6 +76,11 @@ These are things that are usually included in the metadata of the dataset. For y
 
 Think of things like:
 
+- The variables in the Salary Data Set include Average full time adjusted salary per employee per year in a given country within the EU
+
+  - The values in the Data Set are in EUROS per year, it also includes the variable of the Time Period - 3 years in this case - 2022, 2023 and 2024. Another variable are the Countries within the EU
+
+
 - Do the variables contain health information or SES information?
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?

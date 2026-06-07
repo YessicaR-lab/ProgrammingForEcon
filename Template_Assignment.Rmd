@@ -80,7 +80,6 @@ Think of things like:
 
   - The values in the Data Set are in EUROS per year, it also includes the variable of the Time Period - 3 years in this case - 2022, 2023 and 2024. Another variable are the Countries within the EU
 
-
 - Do the variables contain health information or SES information?
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
@@ -172,3 +171,7 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
+
+
+
+

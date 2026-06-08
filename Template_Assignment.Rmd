@@ -58,7 +58,7 @@ gpg_data <- readRDS("data/gpg_data")
 
 midwest is an example dataset included in the tidyverse package
 
-## 2.2 Provide a short summary of the dataset(s)
+## 2.2 Provide a short summary of the dataset(s) 
 
 ```{r}
 head(dataset)

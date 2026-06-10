@@ -58,23 +58,17 @@ gpg_data <- readRDS("data/gpg_data")
 
 midwest is an example dataset included in the tidyverse package
 
-## 2.2 Provide a short summary of the dataset(s) 
+## 2.2 Provide a short summary of the dataset(s)
 
 ```{r}
 summary(gpg_data)
 
 ```
 
-
 ```{r}
 summary(salary_data)
 
 ```
-
-
-
-
-
 
 In this case we see 28 variables, but we miss some information on what units they are in. We also don't know anything about the year/moment in which this data has been captured.
 
@@ -183,7 +177,3 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
-
-
-
-

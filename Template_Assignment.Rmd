@@ -23,7 +23,7 @@ require(eurostat)
 
 # Title Page
 
-Include your names: Imane Ouahi, David Abelovic, Xi Hui, Let's do it!!! Hi Rebecca
+Include your names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia Let's do it!!! Hi Rebecca
 
 Include the tutorial group number: 5 2
 

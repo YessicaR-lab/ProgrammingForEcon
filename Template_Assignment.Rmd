@@ -23,7 +23,7 @@ require(eurostat)
 
 # Title Page
 
-Include your names: Imane Ouahi, David Abelovic, Xi Hui, Let's do it!!! Hi Rebecca
+Include your names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia Let's do it!!! Hi Rebecca
 
 Include the tutorial group number: 5 2
 
@@ -98,8 +98,29 @@ Think of things like:
 
 Say we want to include only larger distances (above 2) in our dataset, we can filter for this.
 
-```{r data_cleaning}
-mean(dataset$percollege)
+```{r missing_values}
+colSums(is.na(gpg_data))
+colSums(is.na(salary_data))
+```
+
+```{r remove_missing}
+gpg_data <- na.omit(gpg_data)
+salary_data <- na.omit(salary_data)
+```
+
+```{r select_variables}
+gpg_data <- gpg_data %>%
+  select(geo, TIME_PERIOD, values)
+salary_data <- salary_data %>%
+  select(geo, TIME_PERIOD, values)
+```
+
+```{r remove_aggregate_regions}
+gpg_data <- gpg_data %>%
+  filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
+
+salary_data <- salary_data %>%
+  filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
 
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
@@ -109,18 +130,36 @@ Please use a separate 'R block' of code for each type of cleaning. So, e.g. one 
 Variable 1
 
 ```{r gen_var1}
+gpg_data <- rename(gpg_data, gpg = values)
+salary_data <- rename(salary_data, salary = values)
+merged_data <- left_join(
+  gpg_data,
+  salary_data,
+  by = c("geo", "TIME_PERIOD")
+)
 
 ```
 
 Variable 2
 
 ```{r gen_var2}
+unique(merged_data$geo)
+merged_data$region <- ifelse(
+  merged_data$geo %in% c(
+    "AT","BE","CH","DE","DK","FI",
+    "FR","IE","IS","LU","NL","NO",
+    "SE","UK"
+  ),
+  "Western Europe",
+  "Eastern Europe"
+)
 
 ```
 
 ## 3.3 Visualize temporal variation
 
 ```{r}
+
 
 ```
 

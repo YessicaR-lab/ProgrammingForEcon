@@ -12,6 +12,7 @@ install.packages("tidyverse")
 install.packages("yaml")
 install.packages("rmarkdown")
 install.packages("eurostat")
+install.packages("maps")
 ```
 
 ```{r packages}
@@ -19,6 +20,7 @@ require(tidyverse)
 require(rmarkdown)
 require(yaml)
 require(eurostat)
+require(maps)
 ```
 
 # Title Page
@@ -247,7 +249,59 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group 
 ## 3.4 Visualize spatial variation
 
 ```{r visualise_map}
+library(maps)
+library(dplyr)
 
+# 1. Get the world map data as a data frame
+world_map <- map_data("world")
+
+# 2. Create a lookup from your country codes (geo) to full English country names
+#    Only include the EU countries you kept after filtering.
+code_to_name <- c(
+  "AT" = "Austria",      "BE" = "Belgium",      "BG" = "Bulgaria",
+  "CY" = "Cyprus",       "CZ" = "Czech Republic","DE" = "Germany",
+  "DK" = "Denmark",      "EE" = "Estonia",      "ES" = "Spain",
+  "FI" = "Finland",      "FR" = "France",       "GR" = "Greece",
+  "HR" = "Croatia",      "HU" = "Hungary",      "IE" = "Ireland",
+  "IT" = "Italy",        "LT" = "Lithuania",    "LU" = "Luxembourg",
+  "LV" = "Latvia",       "MT" = "Malta",        "NL" = "Netherlands",
+  "PL" = "Poland",       "PT" = "Portugal",     "RO" = "Romania",
+  "SE" = "Sweden",       "SI" = "Slovenia",     "SK" = "Slovakia"
+)
+
+# 3. Filter merged_data to the latest year and add the full country name
+latest_year <- max(merged_data$TIME_PERIOD)
+
+gpg_latest <- merged_data %>%
+  filter(TIME_PERIOD == latest_year) %>%
+  mutate(country_name = code_to_name[geo])
+
+# 4. Filter the world map to only the European countries in your data
+europe_map <- world_map %>%
+  filter(region %in% gpg_latest$country_name)
+
+# 5. Join the GPG data to the map data
+europe_map <- europe_map %>%
+  left_join(gpg_latest, by = c("region" = "country_name"))
+
+# 6. Draw the choropleth map
+ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
+  geom_polygon(colour = "white", linewidth = 0.2) +
+  scale_fill_gradientn(
+    colours = c("darkgreen", "yellow", "red"),
+    name = "GPG (%)"
+  ) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  # zoom to Europe
+  labs(
+    title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
+    subtitle = "Percentage difference in average earnings (women vs men)",
+    caption = "Source: Eurostat (tesem180 & nama_10_fte)"
+  ) +
+  theme_void() +
+  theme(
+    plot.title   = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
 ```
 
 Here you provide a description of why the plot above is relevant to your specific social problem.

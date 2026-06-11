@@ -124,6 +124,29 @@ salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
 
+```{r grouping_countries}
+
+northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
+western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
+southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
+eastern_eu  <- c("BG", "CZ", "HU", "PL", "RO", "SK")
+
+region_lookup <- c(
+  setNames(rep("Northern Europe", length(northern_eu)), northern_eu),
+  setNames(rep("Western Europe",  length(western_eu)),  western_eu),
+  setNames(rep("Southern Europe", length(southern_eu)), southern_eu),
+  setNames(rep("Eastern Europe",  length(eastern_eu)),  eastern_eu)
+)
+
+merged_data <- merged_data %>%
+  mutate(region = region_lookup[geo])
+
+# Remove unmatched countries (AL, RS, MK, ME, TR, etc.)
+merged_data <- merged_data %>%
+  filter(!is.na(region))
+
+```
+
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
 
 ## 3.2 Generate necessary variables
@@ -131,14 +154,21 @@ Please use a separate 'R block' of code for each type of cleaning. So, e.g. one 
 Variable 1
 
 ```{r gen_var1}
-gpg_data <- rename(gpg_data, gpg = values)
-salary_data <- rename(salary_data, salary = values)
-merged_data <- left_join(
-  gpg_data,
-  salary_data,
-  by = c("geo", "TIME_PERIOD")
-)
+#gpg_data <- rename(gpg_data, gpg = values)
+#salary_data <- rename(salary_data, salary = values)
+#merged_data <- left_join(
+  #gpg_data,
+  #salary_data,
+  #by = c("geo", "TIME_PERIOD")
+#)
 
+region_summary <- merged_data %>%
+  group_by(region, TIME_PERIOD) %>%
+  summarise(
+    mean_gpg = mean(gpg, na.rm = TRUE),
+    mean_severity = mean(gpg_severity, na.rm = TRUE),
+    .groups = "drop"
+  )
 
 ```
 
@@ -161,15 +191,58 @@ merged_data <- merged_data %>%
 
 #names(merged_data)      # lists all column names
 #str(merged_data)        # shows structure and first few values
-#head(merged_data)       # preview the data
+#,head(merged_data)       # preview the data
 ```
 
 ## 3.3 Visualize temporal variation
 
-```{r}
 
-
+```{r test plot 2}
+ggplot(merged_data, aes(x = TIME_PERIOD, y = gpg, group = geo)) +
+  geom_line(color = "steelblue") +
+  geom_point(color = "steelblue") +
+  facet_wrap(~ geo, scales = "free_y") +
+  labs(
+    title = "Gender Pay Gap over Time (by country)",
+    x = "Year",
+    y = "GPG (%)"
+  ) +
+  theme_minimal()
 ```
+```{r test plot 3}
+# Find countries with highest and lowest average GPG
+top_bottom <- merged_data %>%
+  group_by(geo) %>%
+  summarise(avg_gpg = mean(gpg, na.rm = TRUE)) %>%
+  arrange(desc(avg_gpg)) %>%
+  slice(1,2, n()-1, n())   # top 2 and bottom 2
+selected_countries <- top_bottom$geo
+
+# Plot only those
+merged_data %>%
+  filter(geo %in% selected_countries) %>%
+  ggplot(aes(x = TIME_PERIOD, y = gpg, color = geo)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "GPG Trends: Highest vs Lowest Gap Countries",
+    x = "Year", y = "GPG (%)", color = "Country"
+  ) +
+  theme_minimal()
+```
+
+```{r test_plot_usable}
+ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Average Gender Pay Gap (%) over Time by European Region",
+    x = "Year", y = "Mean GPG (%)", color = "Region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
 
 ## 3.4 Visualize spatial variation
 
@@ -224,3 +297,5 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
+
+

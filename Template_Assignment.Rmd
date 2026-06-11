@@ -52,7 +52,7 @@ Preferably from a URL, but if not, make sure to download the data and store it i
 # salary_data <- get_eurostat("nama_10_fte")
 # saveRDS(gpg_data, "data/gpg_data")
 # saveRDS(salary_data, "data/salary_data")
-salary_data <- readRDS("data/salary_data")
+salary_data <- readRDS("data/salary_data") 
 gpg_data <- readRDS("data/gpg_data")
 ```
 
@@ -112,6 +112,7 @@ salary_data <- na.omit(salary_data)
 gpg_data <- gpg_data %>%
   select(geo, TIME_PERIOD, values)
 salary_data <- salary_data %>%
+  filter(unit == "EUR") %>%
   select(geo, TIME_PERIOD, values)
 ```
 

@@ -139,22 +139,29 @@ merged_data <- left_join(
   by = c("geo", "TIME_PERIOD")
 )
 
+
 ```
 
 Variable 2
 
 ```{r gen_var2}
-unique(merged_data$geo)
-merged_data$region <- ifelse(
-  merged_data$geo %in% c(
-    "AT","BE","CH","DE","DK","FI",
-    "FR","IE","IS","LU","NL","NO",
-    "SE","UK"
-  ),
-  "Western Europe",
-  "Eastern Europe"
-)
+#unique(merged_data$geo)
+#merged_data$region <- ifelse(
+  #merged_data$geo %in% c(
+    #"AT","BE","CH","DE","DK","FI",
+    #"FR","IE","IS","LU","NL","NO",
+    #"SE","UK"
+  #),
+  #"Western Europe",
+  #"Eastern Europe"
+#)
 
+merged_data <- merged_data %>%
+  mutate(gpg_severity = (gpg / 100) * salary)
+
+#names(merged_data)      # lists all column names
+#str(merged_data)        # shows structure and first few values
+#head(merged_data)       # preview the data
 ```
 
 ## 3.3 Visualize temporal variation
@@ -217,6 +224,3 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
-
-
-

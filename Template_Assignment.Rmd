@@ -112,6 +112,7 @@ salary_data <- na.omit(salary_data)
 gpg_data <- gpg_data %>%
   select(geo, TIME_PERIOD, values)
 salary_data <- salary_data %>%
+  filter(unit == "EUR") %>%
   select(geo, TIME_PERIOD, values)
 ```
 

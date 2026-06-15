@@ -126,7 +126,6 @@ salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
 
-
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
 
 ## 3.2 Generate necessary variables
@@ -150,7 +149,7 @@ head(merged_data)
 Variable 2
 
 ```{r gen_var2}
-# Classify EU member states into European sub-regions
+# Classifying EU member states into European sub-regions
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
 southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
@@ -169,10 +168,11 @@ merged_data <- merged_data %>%
 cat("Countries per region:\n")
 table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
+
 **Variable 3: Regional summary statistics**
 
 ```{r gen_var_region_summary}
-# Create region-level summary statistics by year
+# Creating region-level summary statistics by year
 region_summary <- merged_data %>%
   group_by(region, TIME_PERIOD) %>%
   summarise(
@@ -187,35 +187,7 @@ cat("Region summary:\n")
 print(region_summary)
 ```
 
-
-
-<<<<<<< Updated upstream
-merged_data <- merged_data %>%
-  mutate(gpg_severity = (gpg / 100) * salary)
-```
-=======
-
-
->>>>>>> Stashed changes
-
 ## 3.3 Visualize temporal variation
-
-
-```{r test plot 2}
-ggplot(merged_data, aes(x = TIME_PERIOD, y = gpg, group = geo)) +
-  geom_line(color = "steelblue") +
-  geom_point(color = "steelblue") +
-  facet_wrap(~ geo, scales = "free_y") +
-  labs(
-    title = "Gender Pay Gap over Time (by country)",
-    x = "Year",
-    y = "GPG (%)"
-  ) +
-  theme_minimal()
-```
-```{r test plot 3}
-
-```
 
 ```{r test_plot_usable}
 ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
@@ -229,18 +201,14 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group 
   theme(legend.position = "bottom")
 ```
 
-
 ## 3.4 Visualize spatial variation
 
 ```{r visualise_map}
 library(maps)
 library(dplyr)
 
-# 1. Get the world map data as a data frame
 world_map <- map_data("world")
 
-# 2. Create a lookup from your country codes (geo) to full English country names
-#    Only include the EU countries you kept after filtering.
 code_to_name <- c(
   "AT" = "Austria",      "BE" = "Belgium",      "BG" = "Bulgaria",
   "CY" = "Cyprus",       "CZ" = "Czech Republic","DE" = "Germany",
@@ -253,29 +221,25 @@ code_to_name <- c(
   "SE" = "Sweden",       "SI" = "Slovenia",     "SK" = "Slovakia"
 )
 
-# 3. Filter merged_data to the latest year and add the full country name
 latest_year <- max(merged_data$TIME_PERIOD)
 
 gpg_latest <- merged_data %>%
   filter(TIME_PERIOD == latest_year) %>%
   mutate(country_name = code_to_name[geo])
 
-# 4. Filter the world map to only the European countries in your data
 europe_map <- world_map %>%
   filter(region %in% gpg_latest$country_name)
 
-# 5. Join the GPG data to the map data
 europe_map <- europe_map %>%
   left_join(gpg_latest, by = c("region" = "country_name"))
 
-# 6. Draw the choropleth map
 ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
   geom_polygon(colour = "white", linewidth = 0.2) +
   scale_fill_gradientn(
-    colours = c("darkgreen", "yellow", "red"),
+    colours = c("pink", "red", "darkred"),
     name = "GPG (%)"
   ) +
-  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  # zoom to Europe
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  
   labs(
     title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
     subtitle = "Percentage difference in average earnings (women vs men)",
@@ -286,6 +250,8 @@ ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
     plot.title   = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11)
   )
+
+#
 ```
 
 Here you provide a description of why the plot above is relevant to your specific social problem.
@@ -295,7 +261,6 @@ Here you provide a description of why the plot above is relevant to your specifi
 What is the poverty rate by state?
 
 ```{r visualise_subpopulations}
-# Boxplot of GPG by European region for the latest year
 gpg_latest %>%
   ggplot(aes(x = region, y = gpg, fill = region)) +
   geom_boxplot(alpha = 0.8) +
@@ -315,7 +280,6 @@ gpg_latest %>%
 ```
 
 ```{r subpopulation_stats}
-# Summary statistics by region for the latest year
 gpg_latest %>%
   group_by(region) %>%
   summarise(
@@ -332,14 +296,11 @@ gpg_latest %>%
 
 Here you provide a description of why the plot above is relevant to your specific social problem.
 
-
-
 ## 3.6 Event analysis
 
 Analyze the relationship between two variables.
 
 ```{r analysis}
-# Scatter plot with regression line: GPG vs Average Salary
 ggplot(gpg_latest, aes(x = salary, y = gpg)) +
   geom_point(aes(color = region), size = 3, alpha = 0.8) +
   geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 1) +
@@ -353,9 +314,13 @@ ggplot(gpg_latest, aes(x = salary, y = gpg)) +
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+#not part of assignment
+#this is wrong
+#variables need to be shown with an event, event relevant for a topic
 ```
+
 ```{r analysis_correlation}
-# Ensure complete cases for correlation test
 gpg_clean <- gpg_latest %>%
   filter(!is.na(gpg) & !is.na(salary))
 
@@ -372,7 +337,6 @@ summary(lm_model)
 ```
 
 ```{r analysis_regression_table}
-# Create a clean regression table
 cat("Regression Results:\n")
 cat("====================\n")
 coef_summary <- summary(lm_model)$coefficients
@@ -385,14 +349,13 @@ cat(sprintf("Adjusted R-squared: %.3f\n", summary(lm_model)$adj.r.squared))
 ```
 
 ```{r analysis_region_model}
-# Extended model controlling for region
 lm_extended <- lm(gpg ~ salary + region, data = gpg_clean)
 cat("\nExtended Model (controlling for region):\n")
 cat("========================================\n")
 summary(lm_extended)
 ```
 
-```
+\`\`\`
 
 Here you provide a description of why the plot above is relevant to your specific social problem.
 
@@ -409,5 +372,3 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
-
-

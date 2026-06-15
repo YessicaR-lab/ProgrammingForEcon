@@ -137,10 +137,6 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
-
-cat("Merged data dimensions:", dim(merged_data), "\n")
-cat("Variables:", names(merged_data), "\n")
-head(merged_data)
 ```
 
 Variable 2
@@ -165,34 +161,6 @@ merged_data <- merged_data %>%
 cat("Countries per region:\n")
 table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
-**Variable 3: Regional summary statistics**
-
-```{r gen_var_region_summary}
-# Create region-level summary statistics by year
-region_summary <- merged_data %>%
-  group_by(region, TIME_PERIOD) %>%
-  summarise(
-    mean_gpg = mean(gpg, na.rm = TRUE),
-    mean_salary = mean(salary, na.rm = TRUE),
-    mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
-    n_countries = n(),
-    .groups = "drop"
-  )
-
-cat("Region summary:\n")
-print(region_summary)
-```
-
-
-
-<<<<<<< Updated upstream
-merged_data <- merged_data %>%
-  mutate(gpg_severity = (gpg / 100) * salary)
-```
-=======
-
-
->>>>>>> Stashed changes
 
 ## 3.3 Visualize temporal variation
 

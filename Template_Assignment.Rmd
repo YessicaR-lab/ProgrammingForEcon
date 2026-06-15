@@ -97,19 +97,17 @@ Think of things like:
 # Part 3 - Quantifying
 
 ## 3.1 Data cleaning
-
-Say we want to include only larger distances (above 2) in our dataset, we can filter for this.
-
+We perform several data cleaning steps to prepare the datasets for analysis: checking for missing values, removing incomplete observations, selecting relevant variables, and excluding aggregate regional entities.
 ```{r missing_values}
 colSums(is.na(gpg_data))
 colSums(is.na(salary_data))
 ```
-
+We checked both datasets for missing values. The output shows the number of missing values in each variable.
 ```{r remove_missing}
 gpg_data <- na.omit(gpg_data)
 salary_data <- na.omit(salary_data)
 ```
-
+We used na.omit() to remove observations with missing values from both datasets.
 ```{r select_variables}
 gpg_data <- gpg_data %>%
   select(geo, TIME_PERIOD, values)
@@ -117,7 +115,7 @@ salary_data <- salary_data %>%
   filter(unit == "EUR") %>%
   select(geo, TIME_PERIOD, values)
 ```
-
+We kept only the variables needed for the analysis (country, year, and values). For the salary dataset, only observations reported in euros (EUR) were retained.
 ```{r remove_aggregate_regions}
 gpg_data <- gpg_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
@@ -125,8 +123,12 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
+<<<<<<< HEAD
 
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
+=======
+Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
+>>>>>>> 160a10b16137a50300b663bc27e080e7acdfab3d
 
 ## 3.2 Generate necessary variables
 
@@ -140,10 +142,6 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
-
-cat("Merged data dimensions:", dim(merged_data), "\n")
-cat("Variables:", names(merged_data), "\n")
-head(merged_data)
 ```
 
 Variable 2
@@ -169,6 +167,7 @@ cat("Countries per region:\n")
 table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
+<<<<<<< HEAD
 **Variable 3: Regional summary statistics**
 
 ```{r gen_var_region_summary}
@@ -187,6 +186,8 @@ cat("Region summary:\n")
 print(region_summary)
 ```
 
+=======
+>>>>>>> 160a10b16137a50300b663bc27e080e7acdfab3d
 ## 3.3 Visualize temporal variation
 
 ```{r test_plot_usable}

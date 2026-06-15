@@ -123,12 +123,8 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
-<<<<<<< HEAD
-
-Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
-=======
 Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
->>>>>>> 160a10b16137a50300b663bc27e080e7acdfab3d
+
 
 ## 3.2 Generate necessary variables
 
@@ -142,6 +138,9 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
+cat("Merged data dimensions:", dim(merged_data), "\n")
+cat("Variables:", names(merged_data), "\n")
+head(merged_data)
 ```
 
 Variable 2
@@ -167,27 +166,7 @@ cat("Countries per region:\n")
 table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
-<<<<<<< HEAD
-**Variable 3: Regional summary statistics**
 
-```{r gen_var_region_summary}
-# Creating region-level summary statistics by year
-region_summary <- merged_data %>%
-  group_by(region, TIME_PERIOD) %>%
-  summarise(
-    mean_gpg = mean(gpg, na.rm = TRUE),
-    mean_salary = mean(salary, na.rm = TRUE),
-    mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
-    n_countries = n(),
-    .groups = "drop"
-  )
-
-cat("Region summary:\n")
-print(region_summary)
-```
-
-=======
->>>>>>> 160a10b16137a50300b663bc27e080e7acdfab3d
 ## 3.3 Visualize temporal variation
 
 ```{r test_plot_usable}

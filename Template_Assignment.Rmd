@@ -190,10 +190,6 @@ Variable 2
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
-
-#names(merged_data)      # lists all column names
-#str(merged_data)        # shows structure and first few values
-#,head(merged_data)       # preview the data
 ```
 
 ## 3.3 Visualize temporal variation
@@ -212,25 +208,7 @@ ggplot(merged_data, aes(x = TIME_PERIOD, y = gpg, group = geo)) +
   theme_minimal()
 ```
 ```{r test plot 3}
-# Find countries with highest and lowest average GPG
-top_bottom <- merged_data %>%
-  group_by(geo) %>%
-  summarise(avg_gpg = mean(gpg, na.rm = TRUE)) %>%
-  arrange(desc(avg_gpg)) %>%
-  slice(1,2, n()-1, n())   # top 2 and bottom 2
-selected_countries <- top_bottom$geo
 
-# Plot only those
-merged_data %>%
-  filter(geo %in% selected_countries) %>%
-  ggplot(aes(x = TIME_PERIOD, y = gpg, color = geo)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  labs(
-    title = "GPG Trends: Highest vs Lowest Gap Countries",
-    x = "Year", y = "GPG (%)", color = "Country"
-  ) +
-  theme_minimal()
 ```
 
 ```{r test_plot_usable}

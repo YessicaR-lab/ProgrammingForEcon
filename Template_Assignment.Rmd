@@ -92,7 +92,6 @@ Think of things like:
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
 
-*For the sake of this example, I will continue with the assignment...*
 
 # Part 3 - Quantifying
 
@@ -123,6 +122,13 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
+<<<<<<< HEAD
+=======
+
+
+Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
+=======
+>>>>>>> 723f1a32fa7b09df3b27c83230f48dcb2d132cd9
 Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
 
 

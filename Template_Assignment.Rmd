@@ -172,6 +172,23 @@ cat("Countries per region:\n")
 table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
+Variable
+
+```{r gen_var3}
+region_summary <- merged_data %>%
+  group_by(region, TIME_PERIOD) %>%
+  summarise(
+    mean_gpg = mean(gpg, na.rm = TRUE),
+    mean_salary = mean(salary, na.rm = TRUE),
+    mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
+    n_countries = n(),
+    .groups = "drop"
+  )
+
+cat("Region summary:\n")
+print(region_summary)
+```
+
 
 ## 3.3 Visualize temporal variation
 

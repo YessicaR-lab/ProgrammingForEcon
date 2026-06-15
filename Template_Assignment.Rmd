@@ -126,31 +126,8 @@ salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
 
+```{r grouping_countries}
 
-Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
-
-## 3.2 Generate necessary variables
-
-Variable 1
-
-```{r gen_var1}
-gpg_data <- gpg_data %>% rename(gpg = values)
-salary_data <- salary_data %>% rename(salary = values)
-
-merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
-
-merged_data <- merged_data %>%
-  mutate(gpg_severity = (gpg / 100) * salary)
-
-cat("Merged data dimensions:", dim(merged_data), "\n")
-cat("Variables:", names(merged_data), "\n")
-head(merged_data)
-```
-
-Variable 2
-
-```{r gen_var2}
-# Classify EU member states into European sub-regions
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
 southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
@@ -162,41 +139,58 @@ region_lookup <- c(
   setNames(rep("Southern Europe", length(southern_eu)), southern_eu),
   setNames(rep("Eastern Europe",  length(eastern_eu)),  eastern_eu)
 )
+
 merged_data <- merged_data %>%
   mutate(region = region_lookup[geo])
+
+# Remove unmatched countries (AL, RS, MK, ME, TR, etc.)
 merged_data <- merged_data %>%
   filter(!is.na(region))
-cat("Countries per region:\n")
-table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
-```
-**Variable 3: Regional summary statistics**
 
-```{r gen_var_region_summary}
-# Create region-level summary statistics by year
+```
+
+Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
+
+## 3.2 Generate necessary variables
+
+Variable 1
+
+```{r gen_var1}
+#gpg_data <- rename(gpg_data, gpg = values)
+#salary_data <- rename(salary_data, salary = values)
+#merged_data <- left_join(
+  #gpg_data,
+  #salary_data,
+  #by = c("geo", "TIME_PERIOD")
+#)
+
 region_summary <- merged_data %>%
   group_by(region, TIME_PERIOD) %>%
   summarise(
     mean_gpg = mean(gpg, na.rm = TRUE),
-    mean_salary = mean(salary, na.rm = TRUE),
-    mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
-    n_countries = n(),
+    mean_severity = mean(gpg_severity, na.rm = TRUE),
     .groups = "drop"
   )
 
-cat("Region summary:\n")
-print(region_summary)
 ```
 
+Variable 2
 
+```{r gen_var2}
+#unique(merged_data$geo)
+#merged_data$region <- ifelse(
+  #merged_data$geo %in% c(
+    #"AT","BE","CH","DE","DK","FI",
+    #"FR","IE","IS","LU","NL","NO",
+    #"SE","UK"
+  #),
+  #"Western Europe",
+  #"Eastern Europe"
+#)
 
-<<<<<<< Updated upstream
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
 ```
-=======
-
-
->>>>>>> Stashed changes
 
 ## 3.3 Visualize temporal variation
 
@@ -295,102 +289,28 @@ Here you provide a description of why the plot above is relevant to your specifi
 What is the poverty rate by state?
 
 ```{r visualise_subpopulations}
-# Boxplot of GPG by European region for the latest year
-gpg_latest %>%
-  ggplot(aes(x = region, y = gpg, fill = region)) +
-  geom_boxplot(alpha = 0.8) +
-  stat_summary(fun = mean, geom = "point", shape = 18, size = 3, color = "black") +
+dataset$inmetro <- dataset$inmetro %>% as.factor()
+# Boxplot of poverty rate by state using the 'midwest' dataset
+ggplot(dataset, aes(x = inmetro, y = percadultpoverty)) +
+  geom_boxplot() +
   labs(
-    title = paste("Distribution of Gender Pay Gap by European Region (", latest_year, ")", sep = ""),
-    subtitle = "Diamond markers indicate regional means",
-    x = "European Region",
-    y = "Gender Pay Gap (%)",
-    fill = "Region"
+    title = "Distribution of Poverty Rates by Metropolitan status (Midwest counties)",
+    x = "Metropolitan Area",
+    y = "Poverty Rate of Adults (%)"
   ) +
   theme_minimal() +
   theme(
-    legend.position = "none",
-    axis.text.x = element_text(angle = 30, hjust = 1)
+    legend.position = "right"
   )
 ```
 
-```{r subpopulation_stats}
-# Summary statistics by region for the latest year
-gpg_latest %>%
-  group_by(region) %>%
-  summarise(
-    n = n(),
-    mean_gpg = mean(gpg, na.rm = TRUE),
-    median_gpg = median(gpg, na.rm = TRUE),
-    sd_gpg = sd(gpg, na.rm = TRUE),
-    min_gpg = min(gpg, na.rm = TRUE),
-    max_gpg = max(gpg, na.rm = TRUE),
-    .groups = "drop"
-  ) %>%
-  arrange(desc(mean_gpg))
-```
-
 Here you provide a description of why the plot above is relevant to your specific social problem.
-
-
 
 ## 3.6 Event analysis
 
 Analyze the relationship between two variables.
 
 ```{r analysis}
-# Scatter plot with regression line: GPG vs Average Salary
-ggplot(gpg_latest, aes(x = salary, y = gpg)) +
-  geom_point(aes(color = region), size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, color = "black", linewidth = 1) +
-  geom_text(aes(label = geo), vjust = -1, size = 2.5, alpha = 0.7) +
-  labs(
-    title = paste("Relationship between Gender Pay Gap and Average Salary (", latest_year, ")", sep = ""),
-    subtitle = "Linear regression with 95% confidence interval",
-    x = "Average Annual Full-Time Adjusted Salary (EUR)",
-    y = "Gender Pay Gap (%)",
-    color = "Region"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-```
-```{r analysis_correlation}
-# Ensure complete cases for correlation test
-gpg_clean <- gpg_latest %>%
-  filter(!is.na(gpg) & !is.na(salary))
-
-# Pearson correlation test
-cor_test <- cor.test(gpg_clean$salary, gpg_clean$gpg, method = "pearson")
-cat("Pearson correlation coefficient (r):", round(cor_test$estimate, 3), "\n")
-cat("p-value:", format(cor_test$p.value, digits = 4), "\n")
-cat("95% CI: [", round(cor_test$conf.int[1], 3), ", ", round(cor_test$conf.int[2], 3), "]\n", sep = "")
-
-# Linear regression model
-lm_model <- lm(gpg ~ salary, data = gpg_clean)
-cat("\nLinear Regression Summary:\n")
-summary(lm_model)
-```
-
-```{r analysis_regression_table}
-# Create a clean regression table
-cat("Regression Results:\n")
-cat("====================\n")
-coef_summary <- summary(lm_model)$coefficients
-cat(sprintf("Intercept: %.3f (SE = %.3f, p = %.4f)\n",
-            coef_summary[1,1], coef_summary[1,2], coef_summary[1,4]))
-cat(sprintf("Salary coefficient: %.5f (SE = %.5f, p = %.4f)\n",
-            coef_summary[2,1], coef_summary[2,2], coef_summary[2,4]))
-cat(sprintf("R-squared: %.3f\n", summary(lm_model)$r.squared))
-cat(sprintf("Adjusted R-squared: %.3f\n", summary(lm_model)$adj.r.squared))
-```
-
-```{r analysis_region_model}
-# Extended model controlling for region
-lm_extended <- lm(gpg ~ salary + region, data = gpg_clean)
-cat("\nExtended Model (controlling for region):\n")
-cat("========================================\n")
-summary(lm_extended)
-```
 
 ```
 

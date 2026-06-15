@@ -92,7 +92,6 @@ Think of things like:
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
 
-*For the sake of this example, I will continue with the assignment...*
 
 # Part 3 - Quantifying
 
@@ -123,7 +122,7 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
-<<<<<<< HEAD
+
 
 Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
 =======

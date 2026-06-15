@@ -8,19 +8,19 @@ output: pdf_document
 # Set-up your environment
 
 ```{r package_install, include=FALSE}
-install.packages("tidyverse")
-install.packages("yaml")
-install.packages("rmarkdown")
-install.packages("eurostat")
-install.packages("maps")
+#install.packages("tidyverse")
+#install.packages("yaml")
+#install.packages("rmarkdown")
+#install.packages("eurostat")
+#install.packages("maps")
 ```
 
 ```{r packages}
-require(tidyverse)
-require(rmarkdown)
-require(yaml)
-require(eurostat)
-require(maps)
+#require(tidyverse)
+#require(rmarkdown)
+#require(yaml)
+#require(eurostat)
+#require(maps)
 ```
 
 # Title Page
@@ -122,37 +122,8 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
-<<<<<<< HEAD
-=======
 
-
-Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
-=======
->>>>>>> 723f1a32fa7b09df3b27c83230f48dcb2d132cd9
-Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
-
-
-## 3.2 Generate necessary variables
-
-Variable 1
-
-```{r gen_var1}
-gpg_data <- gpg_data %>% rename(gpg = values)
-salary_data <- salary_data %>% rename(salary = values)
-
-merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
-
-merged_data <- merged_data %>%
-  mutate(gpg_severity = (gpg / 100) * salary)
-cat("Merged data dimensions:", dim(merged_data), "\n")
-cat("Variables:", names(merged_data), "\n")
-head(merged_data)
-```
-
-Variable 2
-
-```{r gen_var2}
-# Classifying EU member states into European sub-regions
+```{r grouping_countries}
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
 southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
@@ -164,12 +135,62 @@ region_lookup <- c(
   setNames(rep("Southern Europe", length(southern_eu)), southern_eu),
   setNames(rep("Eastern Europe",  length(eastern_eu)),  eastern_eu)
 )
+
 merged_data <- merged_data %>%
   mutate(region = region_lookup[geo])
+
 merged_data <- merged_data %>%
   filter(!is.na(region))
-cat("Countries per region:\n")
-table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
+
+```
+
+```{r merging_datasets}
+gpg_data <- gpg_data %>% rename(gpg = values)
+salary_data <- salary_data %>% rename(salary = values)
+
+merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
+```
+
+=======
+
+
+Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
+=======
+
+
+Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
+
+
+## 3.2 Generate necessary variables
+
+
+
+
+
+Variable 1
+
+```{r gen_var1}
+
+
+merged_data <- merged_data %>%
+  mutate(gpg_severity = (gpg / 100) * salary)
+
+cat("Merged data dimensions:", dim(merged_data), "\n")
+cat("Variables:", names(merged_data), "\n")
+head(merged_data)
+```
+
+Variable 2
+
+```{r gen_var2}
+
+merged_data <- merged_data %>%
+  mutate(region = region_lookup[geo])
+
+merged_data <- merged_data %>%
+  filter(!is.na(region))
+#cat("Countries per region:\n")
+#table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
 Variable
@@ -185,8 +206,8 @@ region_summary <- merged_data %>%
     .groups = "drop"
   )
 
-cat("Region summary:\n")
-print(region_summary)
+#cat("Region summary:\n")
+#print(region_summary)
 ```
 
 
@@ -254,7 +275,6 @@ ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
     plot.subtitle = element_text(size = 11)
   )
 
-#
 ```
 
 Here you provide a description of why the plot above is relevant to your specific social problem.

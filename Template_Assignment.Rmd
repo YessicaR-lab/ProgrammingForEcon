@@ -203,13 +203,13 @@ region_summary <- merged_data %>%
 
 ## 3.3 Visualize temporal variation
 
-```{r test_plot_usable, include=FALSE}
+```{r test_plot_usable}
 ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
-    title = "Average Gender Pay Gap (%) over Time by European Region",
-    x = "Year", y = "Mean GPG (%)", color = "Region"
+    title = "Average Gender Pay Gap (GPG) in % over Time by European Region",
+    x = "Year", y = "Mean GPG in %", color = "Region"
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -397,3 +397,6 @@ Provide the link to your PUBLIC repository here: ...
 ## 5.2 Reference list
 
 Use APA referencing throughout your document.
+
+
+include=FALSE -> to be used when we want to hide code

@@ -16,11 +16,11 @@ output: pdf_document
 ```
 
 ```{r packages}
-#require(tidyverse)
-#require(rmarkdown)
-#require(yaml)
-#require(eurostat)
-#require(maps)
+require(tidyverse)
+require(rmarkdown)
+require(yaml)
+require(eurostat)
+require(maps)
 ```
 
 # Title Page
@@ -171,16 +171,16 @@ Variable 2
 
 ```{r gen_var2}
 
-merged_data <- merged_data %>%
-  mutate(region = region_lookup[geo])
+#merged_data <- merged_data %>%
+  #mutate(region = region_lookup[geo])
 
-merged_data <- merged_data %>%
-  filter(!is.na(region))
+#merged_data <- merged_data %>%
+  #filter(!is.na(region))
 #cat("Countries per region:\n")
 #table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
-Variable
+Variable 3
 
 ```{r gen_var3}
 region_summary <- merged_data %>%

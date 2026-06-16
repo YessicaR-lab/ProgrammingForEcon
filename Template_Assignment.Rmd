@@ -215,6 +215,9 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group 
   theme(legend.position = "bottom")
 ```
 
+
+
+
 ## 3.4 Visualize spatial variation
 
 ```{r visualise_map}

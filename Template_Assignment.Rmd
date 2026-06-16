@@ -164,9 +164,9 @@ Variable 1
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
 
-cat("Merged data dimensions:", dim(merged_data), "\n")
-cat("Variables:", names(merged_data), "\n")
-head(merged_data)
+#cat("Merged data dimensions:", dim(merged_data), "\n")
+#cat("Variables:", names(merged_data), "\n")
+#head(merged_data)
 ```
 
 Variable 2

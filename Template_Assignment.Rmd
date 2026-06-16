@@ -122,7 +122,7 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
-
+Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
 ```{r grouping_countries}
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
@@ -151,22 +151,9 @@ salary_data <- salary_data %>% rename(salary = values)
 merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 ```
 
-=======
-
-
-Please use a separate 'R block' of code for each type of cleaning. So, e.g. one for missing values, a new one for removing unnecessary variables etc.
-=======
-
-
-Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
 
 
 ## 3.2 Generate necessary variables
-
-
-
-
-
 Variable 1
 
 ```{r gen_var1}

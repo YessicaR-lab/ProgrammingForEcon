@@ -204,6 +204,16 @@ region_summary <- merged_data %>%
 ## 3.3 Visualize temporal variation
 
 ```{r test_plot_usable}
+ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Average Gender Pay Gap (GPG) in % over Time by European Region",
+    x = "Year", y = "Mean GPG severity", color = "Region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
 ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
@@ -250,23 +260,56 @@ europe_map <- world_map %>%
 europe_map <- europe_map %>%
   left_join(gpg_latest, by = c("region" = "country_name"))
 
-ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
+ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg_severity)) +
   geom_polygon(colour = "white", linewidth = 0.2) +
   scale_fill_gradientn(
-    colours = c("pink", "red", "darkred"),
-    name = "GPG (%)"
+    colours = c("#fde725", "#21918c", "#440154"),
+    name = "GPG Severity in Euros"
   ) +
   coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  
   labs(
     title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
-    subtitle = "Percentage difference in average earnings (women vs men)",
-    caption = "Source: Eurostat (tesem180 & nama_10_fte)"
+    subtitle = "Absolute Gap in Earnings (women vs men)",
+    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
   ) +
   theme_void() +
   theme(
     plot.title   = element_text(size = 14, face = "bold"),
     plot.subtitle = element_text(size = 11)
   )
+
+#other graph
+
+atest_year <- max(merged_data$TIME_PERIOD)
+
+gpg_latest <- merged_data %>%
+  filter(TIME_PERIOD == latest_year) %>%
+  mutate(country_name = code_to_name[geo])
+
+europe_map <- world_map %>%
+  filter(region %in% gpg_latest$country_name)
+
+europe_map <- europe_map %>%
+  left_join(gpg_latest, by = c("region" = "country_name"))
+
+ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
+  geom_polygon(colour = "white", linewidth = 0.2) +
+  scale_fill_gradientn(
+    colours = c("#fde725", "#21918c", "#440154"),
+    name = "GPG (%)"
+  ) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  
+  labs(
+    title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
+    subtitle = "Percentage Difference in Average E-arnings (women vs men)",
+    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
+  ) +
+  theme_void() +
+  theme(
+    plot.title   = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 11)
+  )
+
 
 ```
 

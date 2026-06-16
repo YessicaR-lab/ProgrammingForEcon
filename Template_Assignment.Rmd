@@ -13,6 +13,7 @@ output: pdf_document
 #install.packages("rmarkdown")
 #install.packages("eurostat")
 #install.packages("maps")
+
 ```
 
 ```{r packages}
@@ -29,7 +30,7 @@ Include your names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia Let's d
 
 Include the tutorial group number: 5 2
 
-Include your tutorial lecturer's name: Simon Loop
+Include your tutorial lecturer's name: Simon Loop 
 
 # Part 1 - Identify a Social Problem
 

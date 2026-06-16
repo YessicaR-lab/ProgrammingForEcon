@@ -170,9 +170,9 @@ merged_data <- merged_data %>%
 #head(merged_data)
 ```
 
-Variable 2
+Variable void
 
-```{r gen_var2}
+```{r gen_var_void}
 
 #merged_data <- merged_data %>%
   #mutate(region = region_lookup[geo])
@@ -183,9 +183,9 @@ Variable 2
 #table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
-Variable 3
+Variable 2
 
-```{r gen_var3}
+```{r gen_var2}
 region_summary <- merged_data %>%
   group_by(region, TIME_PERIOD) %>%
   summarise(
@@ -203,7 +203,7 @@ region_summary <- merged_data %>%
 
 ## 3.3 Visualize temporal variation
 
-```{r test_plot_usable}
+```{r test_plot_usable, include=FALSE}
 ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +

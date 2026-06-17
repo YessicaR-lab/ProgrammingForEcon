@@ -349,27 +349,13 @@ Here you provide a description of why the plot above is relevant to your specifi
 ## 3.6 Event analysis
 
 
-## 3.6 Event analysis
 
-```{r covid_event_analysis, echo=FALSE}
+```{r covid_event_analysis}
 # COVID-19 event analysis
 # COVID-19 started in 2020, so we compare 2019 and 2021.
-# 2019 = before COVID-19
-# 2021 = after COVID-19
+# 2019 represents the pre-COVID period, while 2021 represents the post-COVID period.
 
 gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
-
-northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
-western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
-southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
-eastern_eu  <- c("BG", "CZ", "HU", "PL", "RO", "SK")
-
-region_lookup <- c(
-  setNames(rep("Northern Europe", length(northern_eu)), northern_eu),
-  setNames(rep("Western Europe",  length(western_eu)),  western_eu),
-  setNames(rep("Southern Europe", length(southern_eu)), southern_eu),
-  setNames(rep("Eastern Europe",  length(eastern_eu)),  eastern_eu)
-)
 
 covid_event_data <- gpg_covid_raw %>%
   filter(
@@ -391,47 +377,81 @@ covid_event_data <- gpg_covid_raw %>%
   filter(!is.na(region))
 
 covid_event_summary <- covid_event_data %>%
-  group_by(covid_period, region) %>%
+  group_by(region, covid_period) %>%
   summarise(
     mean_gpg = mean(values, na.rm = TRUE),
-    n_countries = n(),
     .groups = "drop"
   )
 
 covid_event_summary
+
 ```
 
-```{r covid_event_plot}
-ggplot(covid_event_summary, aes(x = covid_period, y = mean_gpg, fill = covid_period)) +
-  geom_col(width = 0.65, alpha = 0.85) +
-  facet_wrap(~ region) +
-  labs(
-    title = "Gender Pay Gap before and after COVID-19",
-    subtitle = "Comparison between 2019 and 2021 by European region",
-    x = "Period",
-    y = "Mean Gender Pay Gap (%)",
-    fill = "Period"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom",
+```{r covid_event_analysis}
+# COVID-19 event analysis
+# COVID-19 started in 2020, so we compare 2019 and 2021.
+# 2019 represents the pre-COVID period, while 2021 represents the post-COVID period.
+
+gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
+
+covid_event_data <- gpg_covid_raw %>%
+  filter(
+    TIME_PERIOD %in% c(2019, 2021),
+    !geo %in% c("EA19", "EA20", "EU27_2020"),
+    !is.na(values)
+  ) %>%
+  mutate(
+    region = region_lookup[geo]
+  ) %>%
+  filter(!is.na(region))
+
+covid_event_summary <- covid_event_data %>%
+  group_by(region, TIME_PERIOD) %>%
+  summarise(
+    mean_gpg = mean(values, na.rm = TRUE),
+    .groups = "drop"
   )
+
+covid_event_summary
+
 ```
-```{r possible_replacement???}
-ggplot(covid_event_summary, aes(x = covid_period, y = mean_gpg, group = region, color = region)) +
+
+
+```{r covid_event_analysis}
+ggplot(covid_event_summary, aes(x = TIME_PERIOD, y = mean_gpg, group = region, color = region)) +
   geom_line(linewidth = 1.2) +
-  geom_point(size = 2) +
+  geom_point(size = 3) +
+  geom_vline(
+    xintercept = 2020,
+    linetype = "dashed",
+    color = "black",
+    linewidth = 0.8
+  ) +
+  annotate(
+    "text",
+    x = 2020.05,
+    y = max(covid_event_summary$mean_gpg, na.rm = TRUE),
+    label = "COVID-19 begins",
+    hjust = 0,
+    size = 3.5
+  ) +
+  scale_x_continuous(
+    breaks = c(2019, 2020, 2021),
+    labels = c("2019\nBefore COVID-19", "2020\nCOVID-19", "2021\nAfter COVID-19")
+  ) +
   labs(
-    title = "Gender Pay Gap before and after COVID-19 by European Region",
-    subtitle = "Comparison between 2019 and 2021",
-    x = "Period",
+    title = "Change in Gender Pay Gap Before and After COVID-19",
+    subtitle = "Comparison of average Gender Pay Gap between 2019 and 2021 by European region",
+    x = "Year",
     y = "Mean Gender Pay Gap (%)",
     color = "Region"
   ) +
   theme_minimal() +
-  theme(legend.position = "bottom")
-```
+  theme(
+    legend.position = "bottom"
+  )
 
+```
 
 
 Here you provide a description of why the plot above is relevant to your specific social problem.

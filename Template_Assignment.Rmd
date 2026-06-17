@@ -450,7 +450,32 @@ ggplot(covid_event_summary, aes(x = TIME_PERIOD, y = mean_gpg, group = region, c
   theme(
     legend.position = "bottom"
   )
+```
 
+```{r covid_event_plot}
+ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "black", linewidth = 0.8) +
+  annotate(
+    "text",
+    x = 2020.2,
+    y = max(covid_trend_summary$mean_gpg, na.rm = TRUE),
+    label = "COVID-19 begins",
+    hjust = 0,
+    size = 3.5
+  ) +
+  labs(
+    title = "Gender Pay Gap Trend Before and After COVID-19",
+    subtitle = "Average Gender Pay Gap (%) over time by European region",
+    x = "Year",
+    y = "Mean GPG (%)",
+    color = "Region"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom"
+  )
 ```
 
 

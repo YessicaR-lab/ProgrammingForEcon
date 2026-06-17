@@ -132,7 +132,15 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 ```
 
 
-```{r grouping_countries}
+
+
+
+
+
+## 3.2 Generate necessary variables
+Variable 1
+
+```{r grouping_countries_variable_creation}
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
 southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
@@ -155,10 +163,6 @@ merged_data <- merged_data %>%
 
 
 
-
-## 3.2 Generate necessary variables
-Variable 1
-
 ```{r gen_var1}
 
 
@@ -168,19 +172,6 @@ merged_data <- merged_data %>%
 #cat("Merged data dimensions:", dim(merged_data), "\n")
 #cat("Variables:", names(merged_data), "\n")
 #head(merged_data)
-```
-
-Variable void
-
-```{r gen_var_void}
-
-#merged_data <- merged_data %>%
-  #mutate(region = region_lookup[geo])
-
-#merged_data <- merged_data %>%
-  #filter(!is.na(region))
-#cat("Countries per region:\n")
-#table(merged_data$region, merged_data$TIME_PERIOD) %>% rowSums() %>% print()
 ```
 
 Variable 2
@@ -360,7 +351,7 @@ Here you provide a description of why the plot above is relevant to your specifi
 
 ## 3.6 Event analysis
 
-```{r covid_event_analysis}
+```{r covid_event_analysis, echo=FALSE}
 # COVID-19 event analysis
 # COVID-19 started in 2020, so we compare 2019 and 2021.
 # 2019 = before COVID-19
@@ -426,6 +417,21 @@ ggplot(covid_event_summary, aes(x = covid_period, y = mean_gpg, fill = covid_per
     legend.position = "bottom",
   )
 ```
+```{r possible_replacement???}
+ggplot(covid_event_summary, aes(x = covid_period, y = mean_gpg, group = region, color = region)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Gender Pay Gap before and after COVID-19 by European Region",
+    subtitle = "Comparison between 2019 and 2021",
+    x = "Period",
+    y = "Mean Gender Pay Gap (%)",
+    color = "Region"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
 
 
 Here you provide a description of why the plot above is relevant to your specific social problem.

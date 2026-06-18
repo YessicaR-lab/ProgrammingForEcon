@@ -8,22 +8,24 @@ output: pdf_document
 # Set-up your environment
 
 ```{r package_install, include=FALSE}
-install.packages("tidyverse")
-install.packages("yaml")
-install.packages("rmarkdown")
-install.packages("eurostat")
-install.packages("maps")
-install.packages("patchwork")
-install.packages("renv")
+#install.packages("tidyverse")
+#install.packages("yaml")
+#install.packages("rmarkdown")
+#install.packages("eurostat")
+#install.packages("maps")
+#install.packages("patchwork")
+#install.packages("renv")
+#install.packages("dplyr")
 ```
 
-```{r packages}
+```{r packages, include=FALSE}
 require(tidyverse)
 require(rmarkdown)
 require(yaml)
 require(eurostat)
 require(maps)
 require(patchwork)
+require(dplyr)
 ```
 
 # Title Page
@@ -52,7 +54,7 @@ Include the following:
 
 Preferably from a URL, but if not, make sure to download the data and store it in a shared location that you can load the data in from. Do not store the data in a folder you include in the Github repository!
 
-```{r loading_data}
+```{r loading_data, include=FALSE}
 gpg_data <- get_eurostat("tesem180")
 salary_data <- get_eurostat("nama_10_fte")
 saveRDS(gpg_data, "data/gpg_data")
@@ -65,21 +67,19 @@ midwest is an example dataset included in the tidyverse package
 
 ## 2.2 Provide a short summary of the dataset(s)
 
-```{r}
+```{r, summary_gpg_data}
 summary(gpg_data)
 
 ```
 
-```{r}
+```{r summary_salary_data}
 summary(salary_data)
 
 ```
 
 In this case we see 28 variables, but we miss some information on what units they are in. We also don't know anything about the year/moment in which this data has been captured.
 
-``` r
-inline_code = TRUE
-```
+
 
 These are things that are usually included in the metadata of the dataset. For your project, you need to provide us with the information from your metadata that we need to understand your dataset of choice.
 
@@ -100,17 +100,17 @@ Think of things like:
 
 ## 3.1 Data cleaning
 We perform several data cleaning steps to prepare the datasets for analysis: checking for missing values, removing incomplete observations, selecting relevant variables, and excluding aggregate regional entities.
-```{r missing_values}
+```{r missing_values, include=FALSE}
 colSums(is.na(gpg_data))
 colSums(is.na(salary_data))
 ```
 We checked both datasets for missing values. The output shows the number of missing values in each variable.
-```{r remove_missing}
+```{r remove_missing, include=FALSE}
 gpg_data <- na.omit(gpg_data)
 salary_data <- na.omit(salary_data)
 ```
 We used na.omit() to remove observations with missing values from both datasets.
-```{r select_variables}
+```{r select_variables, include=FALSE}
 gpg_data <- gpg_data %>%
   select(geo, TIME_PERIOD, values)
 salary_data <- salary_data %>%
@@ -118,7 +118,7 @@ salary_data <- salary_data %>%
   select(geo, TIME_PERIOD, values)
 ```
 We kept only the variables needed for the analysis (country, year, and values). For the salary dataset, only observations reported in euros (EUR) were retained.
-```{r remove_aggregate_regions}
+```{r remove_aggregate_regions, include=FALSE}
 gpg_data <- gpg_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 
@@ -126,7 +126,7 @@ salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
 Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
-```{r merging_datasets}
+```{r merging_datasets, include=FALSE}
 gpg_data <- gpg_data %>% rename(gpg = values)
 salary_data <- salary_data %>% rename(salary = values)
 
@@ -142,7 +142,7 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 ## 3.2 Generate necessary variables
 Variable 1
 
-```{r grouping_countries_variable_creation}
+```{r grouping_countries_variable_creation, include=FALSE}
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
 southern_eu <- c("CY", "ES", "GR", "HR", "IT", "MT", "PT", "SI")
@@ -165,7 +165,7 @@ merged_data <- merged_data %>%
 
 
 
-```{r gen_var1}
+```{r gen_var1, include=FALSE}
 
 
 merged_data <- merged_data %>%
@@ -178,7 +178,7 @@ merged_data <- merged_data %>%
 
 Variable 2
 
-```{r gen_var2}
+```{r gen_var2, include=FALSE}
 region_summary <- merged_data %>%
   group_by(region, TIME_PERIOD) %>%
   summarise(
@@ -196,7 +196,7 @@ region_summary <- merged_data %>%
 
 ## 3.3 Visualize temporal variation
 
-```{r test_plot_usable}
+```{r test_plot_usable, echo=FALSE}
 plot_severity <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
@@ -229,95 +229,7 @@ plot_severity + plot_percentage +
 
 ## 3.4 Visualize spatial variation
 
-```{r visualise_map, eval=FALSE, include=FALSE}
-library(maps)
-library(dplyr)
-
-world_map <- map_data("world")
-
-code_to_name <- c(
-  "AT" = "Austria",      "BE" = "Belgium",      "BG" = "Bulgaria",
-  "CY" = "Cyprus",       "CZ" = "Czech Republic","DE" = "Germany",
-  "DK" = "Denmark",      "EE" = "Estonia",      "ES" = "Spain",
-  "FI" = "Finland",      "FR" = "France",       "GR" = "Greece",
-  "HR" = "Croatia",      "HU" = "Hungary",      "IE" = "Ireland",
-  "IT" = "Italy",        "LT" = "Lithuania",    "LU" = "Luxembourg",
-  "LV" = "Latvia",       "MT" = "Malta",        "NL" = "Netherlands",
-  "PL" = "Poland",       "PT" = "Portugal",     "RO" = "Romania",
-  "SE" = "Sweden",       "SI" = "Slovenia",     "SK" = "Slovakia"
-)
-
-latest_year <- max(merged_data$TIME_PERIOD)
-
-gpg_latest <- merged_data %>%
-  filter(TIME_PERIOD == latest_year) %>%
-  mutate(country_name = code_to_name[geo])
-
-europe_map <- world_map %>%
-  filter(region %in% gpg_latest$country_name)
-
-europe_map <- europe_map %>%
-  left_join(gpg_latest, by = c("region" = "country_name"))
-
-ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg_severity)) +
-  geom_polygon(colour = "white", linewidth = 0.2) +
-  scale_fill_gradientn(
-    colours = c("#fde725", "#21918c", "#440154"),
-    name = "GPG Severity in Euros"
-  ) +
-  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  
-  labs(
-    title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
-    subtitle = "Absolute Gap in Earnings (women vs men)",
-    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
-  ) +
-  theme_void() +
-  theme(
-    plot.title   = element_text(size = 14, face = "bold"),
-    plot.subtitle = element_text(size = 11)
-  )
-
-#other graph
-
-latest_year <- max(merged_data$TIME_PERIOD)
-
-gpg_latest <- merged_data %>%
-  filter(TIME_PERIOD == latest_year) %>%
-  mutate(country_name = code_to_name[geo])
-
-europe_map <- world_map %>%
-  filter(region %in% gpg_latest$country_name)
-
-europe_map <- europe_map %>%
-  left_join(gpg_latest, by = c("region" = "country_name"))
-
-ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
-  geom_polygon(colour = "white", linewidth = 0.2) +
-  scale_fill_gradientn(
-    colours = c("#fde725", "#21918c", "#440154"),
-    name = "GPG (%)"
-  ) +
-  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +  
-  labs(
-    title = paste("Gender Pay Gap in", latest_year, "by EU Country"),
-    subtitle = "Percentage Difference in Average E-arnings (women vs men)",
-    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
-  ) +
-  theme_void() +
-  theme(
-    plot.title   = element_text(size = 14, face = "bold"),
-    plot.subtitle = element_text(size = 11)
-  )
-
-
-```
-
-
 ```{r visualise_map_final, echo=FALSE}
-# ... (all the previous data preparation remains the same: code_to_name, gpg_latest, europe_map)
-library(maps)
-library(dplyr)
-
 world_map <- map_data("world")
 
 code_to_name <- c(
@@ -393,7 +305,7 @@ Here you provide a description of why the plot above is relevant to your specifi
 
 What is the poverty rate by state?
 
-```{r visualise_subpopulations}
+```{r visualise_subpopulations, echo=FALSE}
 gpg_latest %>%
   ggplot(aes(x = region, y = gpg, fill = region)) +
   geom_boxplot(alpha = 0.8) +
@@ -412,7 +324,7 @@ gpg_latest %>%
   )
 ```
 
-```{r subpopulation_stats}
+```{r subpopulation_stats, echo=FALSE}
 gpg_latest %>%
   group_by(region) %>%
   summarise(
@@ -433,7 +345,7 @@ Here you provide a description of why the plot above is relevant to your specifi
 
 
 
-```{r covid_event_analysis}
+```{r covid_event_analysis, echo=FALSE}
 # COVID-19 event analysis
 # COVID-19 started in 2020, so we compare 2019 and 2021.
 # 2019 represents the pre-COVID period, while 2021 represents the post-COVID period.
@@ -475,7 +387,7 @@ covid_event_summary
 
 #This section uses two visualizations. The first figure shows the trend in the Gender Pay Gap around the COVID-19 period. The second figure focuses specifically on the comparison between 2019 and 2021, with 2019 representing the pre-COVID period and 2021 representing the post-COVID period.
 
-```{r covid_event_data}
+```{r covid_event_data, echo=FALSE}
 gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
 
 covid_trend_data <- gpg_covid_raw %>%
@@ -505,7 +417,7 @@ covid_trend_summary
 
 
 
-```{r covid_event_plot_1}
+```{r covid_event_plot_1, echo=FALSE}
 ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
@@ -574,13 +486,11 @@ covid_trend_summary <- covid_data_severity %>%
     mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
     .groups = "drop"
   )
-
-names(covid_trend_summary)
 ```
 
 
 
-```{r test}
+```{r test, echo=FALSE}
 ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +

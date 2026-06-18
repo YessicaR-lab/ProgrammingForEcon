@@ -106,8 +106,6 @@ Think of things like:
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
 
-
-
 # Part 3 - Quantifying
 
 ## 3.1 Data cleaning

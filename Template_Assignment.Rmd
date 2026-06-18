@@ -83,32 +83,15 @@ These are things that are usually included in the metadata of the dataset. For y
 
 ## 2.3 Describe the type of variables included
 
+
+
 Think of things like:
-
-- The variables in the Salary Data Set include Average full time adjusted salary per employee per year in a given country within the EU
-
-  - The values in the Data Set are in EUROS per year, it also includes the variable of the Time Period - 3 years in this case - 2022, 2023 and 2024. Another variable are the Countries within the EU
 
 - Do the variables contain health information or SES information?
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
 
-## Variables included in SALARY_DATA
 
-- freq: This variable shows how often the data is collected over time. In this dataset, it is recorded annually (A).
-- unit: The unit of measure variable shows the measurement scale used for the data values. The unit of measures used in this dataset are Euro and NAC (National currency).
-- geo: The variable geological entity identifies 28 territorial units. It includes 26 individual European countries, represented by ISO 3166-1 alpha-2 codes, as well as two supranational aggregates.
-- TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 1995 to 2024. It is recorded in annual intervals using the YYYY format.
-- values: the variable value is the annual salary in both euro and the national currency
-
-## Variables included in GPG_DATA
-
-- freq: This variable shows how often the data is collected over time. In this dataset, it is recorded annually (A).
-- unit: shows the measurement scale used for the data values. The unit of measures used in this dataset is percentage (PC).
-- nace_r2: The variable nace_r2 identifies the economic sector according to the NACE Rev. 2 classification. The category B-S excluding O includes industry, construction, and service activities, while excluding public administration, defence, and compulsory social security.
-- geo: The variable geological entity 41 territorial units. It includes 37 individual European countries, represented by ISO 3166-1 alpha-2 codes, as well as four supranational aggregates.
-- TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 2007 to 2024. It is recorded in annual intervals using the YYYY format.
-- values: The variable value represents the unadjusted Gender Pay Gap (GPG), which is the percentage difference in average gross hourly earnings between male and female employees, relative to male earnings.
 
 # Part 3 - Quantifying
 

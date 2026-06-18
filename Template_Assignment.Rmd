@@ -13,7 +13,7 @@ output: pdf_document
 #install.packages("rmarkdown")
 #install.packages("eurostat")
 #install.packages("maps")
-
+install.packages("patchwork")
 ```
 
 ```{r packages}
@@ -22,6 +22,7 @@ require(rmarkdown)
 require(yaml)
 require(eurostat)
 require(maps)
+require(patchwork)
 ```
 
 # Title Page
@@ -195,7 +196,7 @@ region_summary <- merged_data %>%
 ## 3.3 Visualize temporal variation
 
 ```{r test_plot_usable}
-ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
+plot_severity <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
@@ -205,7 +206,7 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = regio
   theme_minimal() +
   theme(legend.position = "bottom")
 
-ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
+plot_percentage <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
@@ -214,6 +215,10 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group 
   ) +
   theme_minimal() +
   theme(legend.position = "bottom")
+
+plot_severity + plot_percentage +
+  plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
 ```
 
 
@@ -221,7 +226,7 @@ ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group 
 
 ## 3.4 Visualize spatial variation
 
-```{r visualise_map}
+```{r visualise_map, eval=FALSE, include=FALSE}
 library(maps)
 library(dplyr)
 
@@ -271,7 +276,7 @@ ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg_severity)) +
 
 #other graph
 
-atest_year <- max(merged_data$TIME_PERIOD)
+latest_year <- max(merged_data$TIME_PERIOD)
 
 gpg_latest <- merged_data %>%
   filter(TIME_PERIOD == latest_year) %>%
@@ -302,6 +307,81 @@ ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
   )
 
 
+```
+
+
+```{r}
+# ... (all the previous data preparation remains the same: code_to_name, gpg_latest, europe_map)
+library(maps)
+library(dplyr)
+
+world_map <- map_data("world")
+
+code_to_name <- c(
+  "AT" = "Austria",      "BE" = "Belgium",      "BG" = "Bulgaria",
+  "CY" = "Cyprus",       "CZ" = "Czech Republic","DE" = "Germany",
+  "DK" = "Denmark",      "EE" = "Estonia",      "ES" = "Spain",
+  "FI" = "Finland",      "FR" = "France",       "GR" = "Greece",
+  "HR" = "Croatia",      "HU" = "Hungary",      "IE" = "Ireland",
+  "IT" = "Italy",        "LT" = "Lithuania",    "LU" = "Luxembourg",
+  "LV" = "Latvia",       "MT" = "Malta",        "NL" = "Netherlands",
+  "PL" = "Poland",       "PT" = "Portugal",     "RO" = "Romania",
+  "SE" = "Sweden",       "SI" = "Slovenia",     "SK" = "Slovakia"
+)
+
+latest_year <- max(merged_data$TIME_PERIOD)
+
+gpg_latest <- merged_data %>%
+  filter(TIME_PERIOD == latest_year) %>%
+  mutate(country_name = code_to_name[geo])
+
+europe_map <- world_map %>%
+  filter(region %in% gpg_latest$country_name)
+
+europe_map <- europe_map %>%
+  left_join(gpg_latest, by = c("region" = "country_name"))
+
+
+
+map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg_severity)) +
+  geom_polygon(colour = "white", linewidth = 0.2) +
+  scale_fill_gradientn(
+    colours = c("#fde725", "#21918c", "#440154"),
+    name = "GPG Severity (€)"
+  ) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
+  labs(
+    title = paste("Gender Pay Gap Severity in", latest_year),
+    subtitle = "Absolute Gap in Earnings (women vs men)",
+    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+#OTHER MAP ===============================================
+
+map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
+  geom_polygon(colour = "white", linewidth = 0.2) +
+  scale_fill_gradientn(
+    colours = c("#fde725", "#21918c", "#440154"),
+    name = "GPG (%)"
+  ) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
+  labs(
+    title = paste("Gender Pay Gap Percentage in", latest_year),
+    subtitle = "Percentage Difference in Average Earnings (women vs men)",
+    #caption = "Source: Eurostat (tesem180)"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  )
+
+map_severity + map_percent
 ```
 
 Here you provide a description of why the plot above is relevant to your specific social problem.
@@ -460,6 +540,7 @@ ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, g
   )
   
 ```
+
 ```{r test_precursor}
 gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
 salary_raw    <- get_eurostat("nama_10_fte", time_format = "num")   

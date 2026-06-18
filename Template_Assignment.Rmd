@@ -8,12 +8,13 @@ output: pdf_document
 # Set-up your environment
 
 ```{r package_install, include=FALSE}
-#install.packages("tidyverse")
-#install.packages("yaml")
-#install.packages("rmarkdown")
-#install.packages("eurostat")
-#install.packages("maps")
+install.packages("tidyverse")
+install.packages("yaml")
+install.packages("rmarkdown")
+install.packages("eurostat")
+install.packages("maps")
 install.packages("patchwork")
+install.packages("renv")
 ```
 
 ```{r packages}
@@ -52,10 +53,10 @@ Include the following:
 Preferably from a URL, but if not, make sure to download the data and store it in a shared location that you can load the data in from. Do not store the data in a folder you include in the Github repository!
 
 ```{r loading_data}
-# gpg_data <- get_eurostat("tesem180")
-# salary_data <- get_eurostat("nama_10_fte")
-# saveRDS(gpg_data, "data/gpg_data")
-# saveRDS(salary_data, "data/salary_data")
+gpg_data <- get_eurostat("tesem180")
+salary_data <- get_eurostat("nama_10_fte")
+saveRDS(gpg_data, "data/gpg_data")
+saveRDS(salary_data, "data/salary_data")
 salary_data <- readRDS("data/salary_data")
 gpg_data <- readRDS("data/gpg_data")
 ```

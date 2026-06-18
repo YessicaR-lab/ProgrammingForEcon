@@ -34,7 +34,7 @@ Include your names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia Let's d
 
 Include the tutorial group number: 5 2
 
-Include your tutorial lecturer's name: Simon Loop 
+Include your tutorial lecturer's name: Simon Loop
 
 # Part 1 - Identify a Social Problem
 
@@ -79,8 +79,6 @@ summary(salary_data)
 
 In this case we see 28 variables, but we miss some information on what units they are in. We also don't know anything about the year/moment in which this data has been captured.
 
-
-
 These are things that are usually included in the metadata of the dataset. For your project, you need to provide us with the information from your metadata that we need to understand your dataset of choice.
 
 ## 2.3 Describe the type of variables included
@@ -95,21 +93,43 @@ Think of things like:
 
 - Have they been measured by interviewing individuals or is the data coming from administrative sources?
 
+## Variables included in SALARY_DATA
+
+- freq: This variable shows how often the data is collected over time. In this dataset, it is recorded annually (A).
+- unit: The unit of measure variable shows the measurement scale used for the data values. The unit of measures used in this dataset are Euro and NAC (National currency).
+- geo: The variable geological entity identifies 28 territorial units. It includes 26 individual European countries, represented by ISO 3166-1 alpha-2 codes, as well as two supranational aggregates.
+- TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 1995 to 2024. It is recorded in annual intervals using the YYYY format.
+- values: the variable value is the annual salary in both euro and the national currency
+
+## Variables included in GPG_DATA
+
+- freq: This variable shows how often the data is collected over time. In this dataset, it is recorded annually (A).
+- unit: shows the measurement scale used for the data values. The unit of measures used in this dataset is percentage (PC).
+- nace_r2: The variable nace_r2 identifies the economic sector according to the NACE Rev. 2 classification. The category B-S excluding O includes industry, construction, and service activities, while excluding public administration, defence, and compulsory social security.
+- geo: The variable geological entity 41 territorial units. It includes 37 individual European countries, represented by ISO 3166-1 alpha-2 codes, as well as four supranational aggregates.
+- TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 2007 to 2024. It is recorded in annual intervals using the YYYY format.
+- values: The variable value represents the unadjusted Gender Pay Gap (GPG), which is the percentage difference in average gross hourly earnings between male and female employees, relative to male earnings.
 
 # Part 3 - Quantifying
 
 ## 3.1 Data cleaning
+
 We perform several data cleaning steps to prepare the datasets for analysis: checking for missing values, removing incomplete observations, selecting relevant variables, and excluding aggregate regional entities.
+
 ```{r missing_values, include=FALSE}
 colSums(is.na(gpg_data))
 colSums(is.na(salary_data))
 ```
+
 We checked both datasets for missing values. The output shows the number of missing values in each variable.
+
 ```{r remove_missing, include=FALSE}
 gpg_data <- na.omit(gpg_data)
 salary_data <- na.omit(salary_data)
 ```
+
 We used na.omit() to remove observations with missing values from both datasets.
+
 ```{r select_variables, include=FALSE}
 gpg_data <- gpg_data %>%
   select(geo, TIME_PERIOD, values)
@@ -117,7 +137,9 @@ salary_data <- salary_data %>%
   filter(unit == "EUR") %>%
   select(geo, TIME_PERIOD, values)
 ```
+
 We kept only the variables needed for the analysis (country, year, and values). For the salary dataset, only observations reported in euros (EUR) were retained.
+
 ```{r remove_aggregate_regions, include=FALSE}
 gpg_data <- gpg_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
@@ -125,7 +147,9 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
+
 Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
+
 ```{r merging_datasets, include=FALSE}
 gpg_data <- gpg_data %>% rename(gpg = values)
 salary_data <- salary_data %>% rename(salary = values)
@@ -133,13 +157,8 @@ salary_data <- salary_data %>% rename(salary = values)
 merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 ```
 
-
-
-
-
-
-
 ## 3.2 Generate necessary variables
+
 Variable 1
 
 ```{r grouping_countries_variable_creation, include=FALSE}
@@ -162,8 +181,6 @@ merged_data <- merged_data %>%
   filter(!is.na(region))
 
 ```
-
-
 
 ```{r gen_var1, include=FALSE}
 
@@ -192,7 +209,6 @@ region_summary <- merged_data %>%
 #cat("Region summary:\n")
 #print(region_summary)
 ```
-
 
 ## 3.3 Visualize temporal variation
 
@@ -223,9 +239,6 @@ plot_severity + plot_percentage +
   plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 ```
-
-
-
 
 ## 3.4 Visualize spatial variation
 
@@ -343,12 +356,7 @@ Here you provide a description of why the plot above is relevant to your specifi
 
 ## 3.6 Event analysis
 
-
-
 ```{r covid_event_analysis, echo=FALSE}
-# COVID-19 event analysis
-# COVID-19 started in 2020, so we compare 2019 and 2021.
-# 2019 represents the pre-COVID period, while 2021 represents the post-COVID period.
 
 gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
 
@@ -382,7 +390,6 @@ covid_event_summary
 
 ```
 
-
 #For the event analysis, we use COVID-19 as the relevant event. COVID-19 began in 2020 and strongly affected European labour markets through lockdowns, remote work, reduced working hours, job losses, and increased unpaid care responsibilities. These changes may have affected men and women differently, making COVID-19 relevant for studying the Gender Pay Gap.
 
 #This section uses two visualizations. The first figure shows the trend in the Gender Pay Gap around the COVID-19 period. The second figure focuses specifically on the comparison between 2019 and 2021, with 2019 representing the pre-COVID period and 2021 representing the post-COVID period.
@@ -414,8 +421,6 @@ covid_comparison_summary <- covid_trend_summary %>%
 
 covid_trend_summary
 ```
-
-
 
 ```{r covid_event_plot_1, echo=FALSE}
 ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
@@ -488,8 +493,6 @@ covid_trend_summary <- covid_data_severity %>%
   )
 ```
 
-
-
 ```{r test, echo=FALSE}
 ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
@@ -534,5 +537,4 @@ Provide the link to your PUBLIC repository here: ...
 
 Use APA referencing throughout your document.
 
-
-include=FALSE -> to be used when we want to hide code
+include=FALSE -\> to be used when we want to hide code

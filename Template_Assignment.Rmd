@@ -67,6 +67,26 @@ midwest is an example dataset included in the tidyverse package
 
 ## 2.2 Provide a short summary of the dataset(s)
 
+## The gdp_data dataset:
+
+The dataset “Gender pay gap in unadjusted form” comes from Eurostat. It measures the unadjusted gender pay gap, which is the difference in average gross hourly earnings between men and women. The dataset was last updated 3 months ago and contains 584 data cells.
+
+- freq: Only one value is used, which is A (annual), so there is only one unique value.
+- unit: Only PC (percentage) is used, so there is one unique value.
+- nace_r2: Only the category [B-S_X_O] is included, so there is one unique value.
+- geo: There are 39 geo codes instead of 41, meaning some geographic codes are missing from the extracted data. The missing codes seem to be: "LI" (Liechtenstein) and "EA21".
+- TIME_PERIOD: The data covers 2007 to 2024.
+- values: These represent the percentage difference in hourly wages between men and women.
+
+## The salary_data dataset:
+
+The dataset “Average full time adjusted salary per employee” comes from Eurostat. This dataset shows the average salary per employee (full-time adjusted), allowing fair comparisons between countries regardless of differences in part-time work. The dataset was last updated 7 months ago and contains 1,560 data cells.
+
+- freq: Only one value is used, A (annual), so there is one unique value.
+- unit: Two units are used, EUR (euro) and NAC (national currency), so there are two unique values.
+- geo: Includes 26 European countries and 2 additional aggregates, resulting in 28 unique geo entries. - TIME_PERIOD: The data covers the years from 1995 to 2024.
+- values: Salaries are expressed in EUR and national currency (NAC).
+
 ```{r, summary_gpg_data}
 summary(gpg_data)
 

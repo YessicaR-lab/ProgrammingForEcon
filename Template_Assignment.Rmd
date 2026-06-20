@@ -100,31 +100,21 @@ These are things that are usually included in the metadata of the dataset. For y
 - TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 2007 to 2024. It is recorded in annual intervals using the YYYY format.
 - values: The variable value represents the unadjusted Gender Pay Gap (GPG), which is the percentage difference in average gross hourly earnings between male and female employees, relative to male earnings.
 
-Think of things like:
-
-- Do the variables contain health information or SES information?
-
-- Have they been measured by interviewing individuals or is the data coming from administrative sources?
-
 # Part 3 - Quantifying
 
 ## 3.1 Data cleaning
 
-We perform several data cleaning steps to prepare the datasets for analysis: checking for missing values, removing incomplete observations, selecting relevant variables, and excluding aggregate regional entities.
+In this section, we clean the Gender Pay Gap and salary datasets to prepare them for analysis. First, we check for missing values and remove incomplete observations, since missing data could affect the reliability of our results. Then, we keep only the variables needed for the analysis: country, year, and values.For the salary dataset, we keep only observations measured in euros (EUR) so that the salary values are comparable. We also remove aggregate regions such as EA19, EA20, and EU27_2020 because our analysis focuses on individual European countries. Finally, we rename the value variables and merge the two datasets by country and year.
 
 ```{r missing_values, include=FALSE}
 colSums(is.na(gpg_data))
 colSums(is.na(salary_data))
 ```
 
-We checked both datasets for missing values. The output shows the number of missing values in each variable.
-
 ```{r remove_missing, include=FALSE}
 gpg_data <- na.omit(gpg_data)
 salary_data <- na.omit(salary_data)
 ```
-
-We used na.omit() to remove observations with missing values from both datasets.
 
 ```{r select_variables, include=FALSE}
 gpg_data <- gpg_data %>%
@@ -134,8 +124,6 @@ salary_data <- salary_data %>%
   select(geo, TIME_PERIOD, values)
 ```
 
-We kept only the variables needed for the analysis (country, year, and values). For the salary dataset, only observations reported in euros (EUR) were retained.
-
 ```{r remove_aggregate_regions, include=FALSE}
 gpg_data <- gpg_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
@@ -143,8 +131,6 @@ gpg_data <- gpg_data %>%
 salary_data <- salary_data %>%
   filter(!geo %in% c("EA19", "EA20", "EU27_2020"))
 ```
-
-Eurostat datasets often include aggregate entities such as "EA19" (Euro area with 19 countries), "EA20" (Euro area with 20 countries), and "EU27_2020" (European Union with 27 member states, 2020 composition). We exclude these to focus exclusively on individual member states, enabling country-level comparisons.
 
 ```{r merging_datasets, include=FALSE}
 gpg_data <- gpg_data %>% rename(gpg = values)
@@ -183,10 +169,6 @@ merged_data <- merged_data %>%
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
-
-#cat("Merged data dimensions:", dim(merged_data), "\n")
-#cat("Variables:", names(merged_data), "\n")
-#head(merged_data)
 ```
 
 Variable 2
@@ -201,9 +183,6 @@ region_summary <- merged_data %>%
     n_countries = n(),
     .groups = "drop"
   )
-
-#cat("Region summary:\n")
-#print(region_summary)
 ```
 
 ## 3.3 Visualize temporal variation
@@ -386,9 +365,9 @@ covid_event_summary
 
 ```
 
-#For the event analysis, we use COVID-19 as the relevant event. COVID-19 began in 2020 and strongly affected European labour markets through lockdowns, remote work, reduced working hours, job losses, and increased unpaid care responsibilities. These changes may have affected men and women differently, making COVID-19 relevant for studying the Gender Pay Gap.
+# For the event analysis, we use COVID-19 as the relevant event. COVID-19 began in 2020 and strongly affected European labour markets through lockdowns, remote work, reduced working hours, job losses, and increased unpaid care responsibilities. These changes may have affected men and women differently, making COVID-19 relevant for studying the Gender Pay Gap.
 
-#This section uses two visualizations. The first figure shows the trend in the Gender Pay Gap around the COVID-19 period. The second figure focuses specifically on the comparison between 2019 and 2021, with 2019 representing the pre-COVID period and 2021 representing the post-COVID period.
+# This section uses two visualizations. The first figure shows the trend in the Gender Pay Gap around the COVID-19 period. The second figure focuses specifically on the comparison between 2019 and 2021, with 2019 representing the pre-COVID period and 2021 representing the post-COVID period.
 
 ```{r covid_event_data, echo=FALSE}
 gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
@@ -416,45 +395,6 @@ covid_comparison_summary <- covid_trend_summary %>%
   filter(TIME_PERIOD %in% c(2019, 2021))
 
 covid_trend_summary
-```
-
-```{r covid_event_plot_1, echo=FALSE}
-ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg, color = region, group = region)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 2) +
-  geom_point(
-    data = covid_trend_summary %>% filter(TIME_PERIOD %in% c(2019, 2021)),
-    size = 3.5
-  ) +
-  geom_vline(
-    xintercept = 2020,
-    linetype = "dashed",
-    color = "black",
-    linewidth = 0.8
-  ) +
-  annotate(
-    "text",
-    x = 2020.15,
-    y = max(covid_trend_summary$mean_gpg, na.rm = TRUE),
-    label = "COVID-19 begins",
-    hjust = 0,
-    size = 3.5
-  ) +
-  scale_x_continuous(
-    breaks = 2017:2023
-  ) +
-  labs(
-    title = "Gender Pay Gap Trend Before and After COVID-19",
-    subtitle = "Average Gender Pay Gap (%) over time by European region, 2017-2023",
-    x = "Year",
-    y = "Mean GPG (%)",
-    color = "Region"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "bottom"
-  )
-  
 ```
 
 ```{r test_precursor, include=FALSE}
@@ -485,13 +425,46 @@ covid_trend_summary <- covid_data_severity %>%
   group_by(region, TIME_PERIOD) %>%
   summarise(
     mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
-    mean_gpg = mean(gpg, na.rm = TRUE),          # <-- add this line
+    mean_gpg = mean(gpg, na.rm = TRUE),        
     .groups = "drop"
   )
 ```
 
+```{r event_analysis_final, echo=FALSE}
+gpg_covid_raw <- get_eurostat("tesem180", time_format = "num")
+salary_raw    <- get_eurostat("nama_10_fte", time_format = "num")   
 
-```{r test, echo=FALSE}
+salary_clean <- salary_raw %>%
+  filter(unit == "EUR") %>%
+  select(geo, TIME_PERIOD, values) %>%
+  rename(salary = values)
+
+covid_data_severity <- gpg_covid_raw %>%
+  filter(
+    TIME_PERIOD >= 2017, TIME_PERIOD <= 2023,
+    !geo %in% c("EA19", "EA20", "EU27_2020"),
+    !is.na(values)
+  ) %>%
+  rename(gpg = values) %>%
+  left_join(salary_clean, by = c("geo", "TIME_PERIOD")) %>%
+  filter(!is.na(salary)) %>%                
+  mutate(gpg_severity = (gpg / 100) * salary) 
+
+covid_data_severity <- covid_data_severity %>%
+  mutate(region = region_lookup[geo]) %>%
+  filter(!is.na(region))
+
+covid_trend_summary <- covid_data_severity %>%
+  group_by(region, TIME_PERIOD) %>%
+  summarise(
+    mean_gpg_severity = mean(gpg_severity, na.rm = TRUE),
+    mean_gpg = mean(gpg, na.rm = TRUE),        
+    .groups = "drop"
+  )
+
+
+
+
 severity_covid_trend <- ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
@@ -509,8 +482,9 @@ severity_covid_trend <- ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mea
   ) +
   scale_x_continuous(breaks = 2017:2023) +
   labs(
-    title = "Gender Pay Gap Severity Trend Before and After COVID-19",
-    subtitle = "Average absolute gap (EUR) over time by European region, 2017-2023",
+    title = "GPG Severity Trend 
+    Before/After COVID-19",
+    # subtitle = "Average absolute gap (EUR) over time by European region, 2017-2023",
     x = "Year",
     y = "Mean GPG Severity (EUR)",
     color = "Region"

@@ -188,8 +188,6 @@ Here are descriptions for the three variables created in section 3.2:
 
 - This is a continuous variable, which translates the relative gender pay gap (which expressed as a percentage in the data-set) into an absolute difference in annual earning in euros between women and men.
 
-<!-- -->
-
 - It is calculated with the formula **`gpg_severity = (gpg / 100) * salary`**, where **`gpg`** is the unadjusted gender pay gap, expressed as a percentage, and **`salary`** is the average full-time adjusted salary per employee, expressed in Euros.
 
 - Thus, the resulting value gives us the approximate amount, in euros, by which the average annual earnings of women are lower than that of men.
@@ -265,9 +263,6 @@ region_summary <- merged_data %>%
 **The Right plot: Average Gender Pay Gap in % over Time**
 
 - This plot shows us the average unadjusted Gender Pay Gap as a percentage for the same European regions. When assessing the pay gap in terms of percentages, it makes it easier for us to compare and see the relative inequality across the four European regions.
-
-<!-- -->
-
 - A declining line therefore suggests that the relative difference between women’s and men’s earnings is narrowing. We can also observe that despite different wage levels, such as between Eastern and Western Europe, these two regions have a similar pay gap relative to the associated incomes in those regions.
 
 ```{r temporal_plot_final, echo=FALSE}
@@ -296,7 +291,31 @@ plot_severity + plot_percentage +
   theme(legend.position = "bottom")
 ```
 
-## 3.4 Visualize spatial variation
+## 3.4 Visualisation of Spatial Variation
+
+The figure for Visualisation of Spatial Variation consists of two Choropleth maps showcasing all EU countries, both of which are using the most recent year of data available from our merged dataset. The maps’ colour gradient ranges from yellow (low values) to green (middle values) to purple (high values).
+
+**The Left map: Gender Pay Gap Severity in Euros**
+
+- The fill colour in this map shows the Gender Pay Gap Severity in Euros for each EU country. Darker purple indicates a larger absolute gap in earnings for women.
+
+- The map also directly shows us which countries are the main culprits behind this problem - i.e. which countries’ women experience the heaviest financial and economical penalty as a result of the Gender Pay Gap. Even if the percentage gap in those countries appears moderate (e.g. Sweden, which is a high salary economy), the severity is indeed still high in monetary terms.
+
+**The Right map: Gender Pay Gap in %**
+
+- The fill colour in this map shows the unadjusted Gender Pay Gap as a percentage for each EU country.
+
+- This map, on the other hand, reflects the relative inequality of how much less women earn compared to men, for each country. This map also helps us to identify EU countries with the most unequal wage structure - regardless of the general wage level. We can also notice that some countries have both a high GPG Severity and a high GPG in %: Germany, Austria, Finland and Denmark are on the top of such list.
+
+**Relevance to the social problem**
+
+- This Spatial Variation analysis reveals rather striking regional patterns across the EU.
+
+- Let’s re-examine an aforementioned example: Eastern European countries often display lower GPG Severity compared to Western Europe, however, when looking at the GPG in %, we can see that, for example, countries such as Slovakia and Czechia are at similarly severe level as Germany and Austria in terms of percentage gaps.
+
+- The Western European region has both high GPG Severity and high GPG in %, as average salaries are higher in that given region, while conversely, Southern Europe is in general the most equal amongst our examined regions, with having both the lowest GPG Severity and lowest GPG in %.
+
+- By comparing the two maps, we can see that the Gender Pay Gap is indeed not uniform across the EU, and that effective policies must certainly take into consideration the relative gap (GPG in %) experienced and the absolute economic harm (GPG Severity) done to women. Furthermore, our maps enable quick identification of ‘GPG Hotspots’, which require more urgent attention.
 
 ```{r spatial_map_final, echo=FALSE}
 world_map <- map_data("world")

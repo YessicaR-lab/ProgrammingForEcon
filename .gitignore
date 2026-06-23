@@ -1,5 +1,4 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-*.Rmd
+.DS_Store
+renv/.DS_Store
+*.pdf
+data/*.rds

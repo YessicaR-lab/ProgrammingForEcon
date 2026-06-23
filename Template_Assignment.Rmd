@@ -1,6 +1,6 @@
 ---
-title: "Template"
-author: "Studentnames and studentnumbers here"
+title: "Gender Pay Gap"
+author: "David Abelovic 2895680, Xi Hui 2905810, Imane Ouahi 2896041, Chaimae Ouarhis 2885377, Rebecca Devasia 2801119"
 date: "`r Sys.Date()`"
 output: pdf_document
 ---
@@ -32,15 +32,13 @@ require(ggnewscale)
 
 # Title Page
 
-Names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia, Chaime Oh
+Names: Imane Ouahi, David Abelovic, Xi Hui, Rebecca Devasia, Chaime Ouarhis
 
-Tutorial group number: 5 2
+Tutorial group number: 5.2
 
 Tutorial lecturer's name: Simon Loop
 
 # Part 1 - Identify a Social Problem
-
-Use APA referencing throughout your document. [Here's a link to some explanation.](https://www.mendeley.com/guides/apa-citation-guide/)
 
 ## 1.1 Describe the Social Problem
 
@@ -56,8 +54,6 @@ This study examines the gender pay gap across the EU by grouping Northern, Weste
 
 ## 2.1 Load in the data
 
-Preferably from a URL, but if not, make sure to download the data and store it in a shared location that you can load the data in from. Do not store the data in a folder you include in the Github repository!
-
 ```{r loading_data, include=FALSE}
 gpg_data <- get_eurostat("tesem180")
 salary_data <- get_eurostat("nama_10_fte")
@@ -67,9 +63,7 @@ salary_data <- readRDS("data/salary_data")
 gpg_data <- readRDS("data/gpg_data")
 ```
 
-midwest is an example dataset included in the tidyverse package
-
-## 2.2 Provide a short summary of the dataset(s)
+## 2.2 A short summary of the datasets we used
 
 ## The gdp_data dataset summary:
 
@@ -91,21 +85,17 @@ The dataset “Average full time adjusted salary per employee” comes from Euro
 - geo: Includes 26 European countries and 2 additional aggregates, resulting in 28 unique geo entries. - TIME_PERIOD: The data covers the years from 1995 to 2024.
 - values: Salaries are expressed in EUR and national currency (NAC).
 
-```{r, summary_gpg_data}
+```{r, summary_gpg_data, inlcude=FALSE}
 summary(gpg_data)
 
 ```
 
-```{r summary_salary_data}
+```{r summary_salary_data, include=FALSE}
 summary(salary_data)
 
 ```
 
-In this case we see 28 variables, but we miss some information on what units they are in. We also don't know anything about the year/moment in which this data has been captured.
-
-These are things that are usually included in the metadata of the dataset. For your project, you need to provide us with the information from your metadata that we need to understand your dataset of choice.
-
-## 2.3 Describe the type of variables included
+## 2.3 Description of the type of variables included
 
 ## Variables included in salary_data:
 
@@ -118,8 +108,6 @@ These are things that are usually included in the metadata of the dataset. For y
 - TIME_PERIOD: The time variable shows the time period covered by the dataset, which spans from 1995 to 2024. It is recorded in annual intervals using the YYYY format.
 
 - values: the variable value is the annual salary in both euro (EUR) and the national currency (NAC).
-
-\
 
 ## Variables included in gpg_data:
 
@@ -139,7 +127,7 @@ These are things that are usually included in the metadata of the dataset. For y
 
 ## 3.1 Data cleaning
 
-In this section, we clean the Gender Pay Gap and salary datasets to prepare them for analysis. First, we check for missing values and remove incomplete observations, since missing data could affect the reliability of our results. Then, we keep only the variables needed for the analysis: country, year, and values.For the salary dataset, we keep only observations measured in euros (EUR) so that the salary values are comparable. We also remove aggregate regions such as EA19, EA20, and EU27_2020 because our analysis focuses on individual European countries. Finally, we rename the value variables and merge the two datasets by country and year.
+In this section, we clean the Gender Pay Gap and salary datasets to prepare them for analysis. First, we check for missing values and remove incomplete observations, since missing data could affect the reliability of our results. Then, we keep only the variables needed for the analysis: country, year, and values. For the salary dataset, we keep only observations measured in euros (EUR) so that the salary values are comparable. We also remove aggregate regions such as EA19, EA20, and EU27_2020 because our analysis focuses on individual European countries. Finally, we rename the value variables and merge the two datasets by country and year.
 
 ```{r missing_values, include=FALSE}
 colSums(is.na(gpg_data))
@@ -174,9 +162,7 @@ salary_data <- salary_data %>% rename(salary = values)
 merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 ```
 
-## 3.2 Generate necessary variables
-
-Here are descriptions for the three variables created in section 3.2:
+## 3.2 Generation of Necessary Variables
 
 **Variable 1 – `region`**
 
@@ -196,7 +182,7 @@ Here are descriptions for the three variables created in section 3.2:
 
 - The monetary severity this variable introduces to us, allows us to assess the economic impact on women across different European regions and associated years, which we would be unable to assess when only looking at the percentage gap indicating relative inequality.
 
-**Sub-variable – `region_summary` (aggregated dataset)**
+**Sub-variable – `region_summary`**
 
 - This is not a variable on its own, it is rather a set of sub-variables relating to variable 2, which will make all of our graphical analysis possible from here on.
 
@@ -206,9 +192,7 @@ Here are descriptions for the three variables created in section 3.2:
 
 - They mainly smooth out noise which would be otherwise present if we plotted every country included, and reveal broader trends in each region over time.
 
-Variable 1
-
-```{r grouping_countries_variable_creation, include=FALSE}
+```{r gen_var1, include=FALSE}
 
 northern_eu <- c("DK", "EE", "FI", "IE", "LT", "LV", "SE")
 western_eu  <- c("AT", "BE", "DE", "FR", "LU", "NL")
@@ -230,17 +214,13 @@ merged_data <- merged_data %>%
 
 ```
 
-Variable 2
-
-```{r gen_var1, include=FALSE}
+```{r gen_var2, include=FALSE}
 
 merged_data <- merged_data %>%
   mutate(gpg_severity = (gpg / 100) * salary)
 ```
 
-Variable 3
-
-```{r gen_var2, include=FALSE}
+```{r gen_sub_var, include=FALSE}
 
 region_summary <- merged_data %>%
   group_by(region, TIME_PERIOD) %>%
@@ -254,18 +234,7 @@ region_summary <- merged_data %>%
 
 ## 3.3 Visualize temporal variation
 
-**The graph for Visualisation of Temporal Variation consists of two line plots. The evolution of the Gender Pay Gap over time (x-axis) for the four European regions (coloured lines) is shown in both graphs.**
-
-**The Left plot: Average Gender Pay Gap Severity in Euros over Time**
-
-- This plot shows the average/mean Gender Pay Gap Severity in Euros per Region per Year. GPG Severity, as we already discussed, shows the absolute gap in earnings between women relative to men, calculated with our formula: **`gpg_severity = (gpg / 100) * salary`**.
-
-- When we express this gap in monetary terms, as can be seen in this plot, the real economic disadvantage women face is highlighted. A higher line therefore indicates a larger absolute gap in earnings. Further, this plot also allows us to see whether the impact of the pay gap has been growing, decreasing or remained constant over time across European regions.
-
-**The Right plot: Average Gender Pay Gap in % over Time**
-
-- This plot shows us the average unadjusted Gender Pay Gap as a percentage for the same European regions. When assessing the pay gap in terms of percentages, it makes it easier for us to compare and see the relative inequality across the four European regions.
-- A declining line therefore suggests that the relative difference between women’s and men’s earnings is narrowing. We can also observe that despite different wage levels, such as between Eastern and Western Europe, these two regions have a similar pay gap relative to the associated incomes in those regions.
+The graph for Visualisation of Temporal Variation consists of two line plots. The evolution of the Gender Pay Gap over time (x-axis) for the four European regions (coloured lines) is shown in both graphs.
 
 ```{r temporal_plot_final, echo=FALSE}
 plot_severity <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severity, color = region, group = region)) +
@@ -293,31 +262,24 @@ plot_severity + plot_percentage +
   theme(legend.position = "bottom")
 ```
 
-## 3.4 Visualisation of Spatial Variation
+**Plot A: Average Gender Pay Gap Severity in Euros over Time**
 
-The figure for Visualisation of Spatial Variation consists of two Choropleth maps showcasing all EU countries, both of which are using the most recent year of data available from our merged dataset. The maps’ colour gradient ranges from yellow (low values) to green (middle values) to purple (high values).
+- This plot shows the average/mean Gender Pay Gap Severity in Euros per Region per Year. GPG Severity, as we already discussed, shows the absolute gap in earnings between women relative to men, calculated with our formula: **`gpg_severity = (gpg / 100) * salary`**.
 
-**The Left map: Gender Pay Gap Severity in Euros**
+- When we express this gap in monetary terms, as can be seen in this plot, the real economic disadvantage women face is highlighted. A higher line therefore indicates a larger absolute gap in earnings. Further, this plot also allows us to see whether the impact of the pay gap has been growing, decreasing or remained constant over time across European regions.
 
-- The fill colour in this map shows the Gender Pay Gap Severity in Euros for each EU country. Darker purple indicates a larger absolute gap in earnings for women.
+**Plot B: Average Gender Pay Gap in % over Time**
 
-- The map also directly shows us which countries are the main culprits behind this problem - i.e. which countries’ women experience the heaviest financial and economical penalty as a result of the Gender Pay Gap. Even if the percentage gap in those countries appears moderate (e.g. Sweden, which is a high salary economy), the severity is indeed still high in monetary terms.
-
-**The Right map: Gender Pay Gap in %**
-
-- The fill colour in this map shows the unadjusted Gender Pay Gap as a percentage for each EU country.
-
-- This map, on the other hand, reflects the relative inequality of how much less women earn compared to men, for each country. This map also helps us to identify EU countries with the most unequal wage structure - regardless of the general wage level. We can also notice that some countries have both a high GPG Severity and a high GPG in %: Germany, Austria, Finland and Denmark are on the top of such list.
+- This plot shows us the average unadjusted Gender Pay Gap as a percentage for the same European regions. When assessing the pay gap in terms of percentages, it makes it easier for us to compare and see the relative inequality across the four European regions.
+- A declining line therefore suggests that the relative difference between women’s and men’s earnings is narrowing. We can also observe that despite different wage levels, such as between Eastern and Western Europe, these two regions have a similar pay gap relative to the associated incomes in those regions.
 
 **Relevance to the social problem**
 
-- This Spatial Variation analysis reveals rather striking regional patterns across the EU.
+- Together, the tow plots shown above clearly separate the relative and the absolute dimensions of the Gender Pay Gap issue. Whilst an European region might show a shrinking percentage gap over time, the monetary severity still remains large, if salaries in that region are high (e.g.: See Western Europe). The observation of these trends over time will help us properly assess whether policy efforts from the EU, such as equal pay legislation, are effective, and whether economic changes and disruptions (e.g.: 2008 GFC, COVID-19) have affected the Gender Pay Gap in different ways across the EU.
 
-- Let’s re-examine an aforementioned example: Eastern European countries often display lower GPG Severity compared to Western Europe, however, when looking at the GPG in %, we can see that, for example, countries such as Slovakia and Czechia are at similarly severe level as Germany and Austria in terms of percentage gaps.
+## 3.4 Visualisation of Spatial Variation
 
-- The Western European region has both high GPG Severity and high GPG in %, as average salaries are higher in that given region, while conversely, Southern Europe is in general the most equal amongst our examined regions, with having both the lowest GPG Severity and lowest GPG in %.
-
-- By comparing the two maps, we can see that the Gender Pay Gap is indeed not uniform across the EU, and that effective policies must certainly take into consideration the relative gap (GPG in %) experienced and the absolute economic harm (GPG Severity) done to women. Furthermore, our maps enable quick identification of ‘GPG Hotspots’, which require more urgent attention.
+The figure for Visualisation of Spatial Variation consists of two Choropleth maps showcasing all EU countries, both of which are using the most recent year of data available from our merged dataset. The maps’ colour gradient ranges from yellow (low values) to green (middle values) to purple (high values). Both maps showcase the latest year and the latest date in our Datasets - 1st of January 2024.
 
 ```{r spatial_map_final, echo=FALSE}
 world_map <- map_data("world")
@@ -398,7 +360,23 @@ map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = g
 map_severity + map_percent
 ```
 
-Here you provide a description of why the plot above is relevant to your specific social problem.
+**Map A: Gender Pay Gap Severity in Euros**
+
+- The fill colour in this map shows the Gender Pay Gap Severity in Euros for each EU country. Darker purple indicates a larger absolute gap in earnings for women.
+
+- The map also directly shows us which countries are the main culprits behind this problem - i.e. which countries’ women experience the heaviest financial and economical penalty as a result of the Gender Pay Gap. Even if the percentage gap in those countries appears moderate (e.g. Sweden, which is a high salary economy), the severity is indeed still high in monetary terms.
+
+**Map B: Gender Pay Gap in %**
+
+- The fill colour in this map shows the unadjusted Gender Pay Gap as a percentage for each EU country.
+
+- This map, on the other hand, reflects the relative inequality of how much less women earn compared to men, for each country. This map also helps us to identify EU countries with the most unequal wage structure - regardless of the general wage level. We can also notice that some countries have both a high GPG Severity and a high GPG in %: Germany, Austria, Finland and Denmark are on the top of such list.
+
+**Relevance to the social problem**
+
+- This Spatial Variation analysis reveals rather striking regional patterns across the EU. Let’s re-examine an aforementioned example: Eastern European countries often display lower GPG Severity compared to Western Europe, however, when looking at the GPG in %, we can see that, for example, countries such as Slovakia and Czechia are at similarly severe level as Germany and Austria in terms of percentage gaps. The Western European region has both high GPG Severity and high GPG in %, as average salaries are higher in that given region, while conversely, Southern Europe is in general the most equal amongst our examined regions, with having both the lowest GPG Severity and lowest GPG in %.
+
+- By comparing the two maps, we can see that the Gender Pay Gap is indeed not uniform across the EU, and that effective policies must certainly take into consideration the relative gap (GPG in %) experienced and the absolute economic harm (GPG Severity) done to women. Furthermore, our maps enable quick identification of ‘GPG Hotspots’, which require more urgent attention.
 
 ## 3.5 Visualize sub-population variation
 

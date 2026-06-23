@@ -1,5 +1,5 @@
 ---
-title: "Gender Pay Gap"
+title: "A Cartography of Inequality: Regional Disparities in the EU Gender Pay Gap"
 author: 
   - "David Abelovic 2895680, Xi Hui 2905810, Imane Ouahi 2896041"
   - "Chaimae Ouarhis 2885377, Rebecca Devasia 2801119"
@@ -7,19 +7,17 @@ date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
-# Set-up your environment
-
 ```{r package_install, include=FALSE}
-#install.packages("tidyverse")
-#install.packages("yaml")
-#install.packages("rmarkdown")
-#install.packages("eurostat")
-#install.packages("maps")
-#install.packages("patchwork")
-#install.packages("renv")
-#install.packages("dplyr")
-#install.packages("ggnewscale")
-#install.packages("tinytex")
+install.packages("tidyverse")
+install.packages("yaml")
+install.packages("rmarkdown")
+install.packages("eurostat")
+install.packages("maps")
+install.packages("patchwork")
+install.packages("renv")
+install.packages("dplyr")
+install.packages("ggnewscale")
+install.packages("tinytex")
 ```
 
 ```{r packages, include=FALSE}
@@ -41,32 +39,36 @@ Tutorial group number: 5.2
 
 Tutorial lecturer's name: Simon Loop
 
-# Part 1 - Identify a Social Problem
+# Part 1 - Identifying a Social Problem
 
-## 1.1 Describe the Social Problem
+## 1.1 Description of the Social Problem
 
 The gender pay gap (GPG) remains an important social and economic issue in the European Union (EU). Although certain progress has been made toward improved gender equality, women still earn less than men on average in many European countries (Eurostat, 2024). Although the gender pay gap differs between countries and regions, differences in earnings between men and women still continue to be a problem across Europe.
 
 Several factors lead to the gender pay gap. This includes things such as differences in working hours, segregation by occupation, career interruptions related to pregnancy and caregiving responsibilities, and unequal representation in higher-paying positions (Blau & Kahn, 2017). Recent research also reveals the fact that structural inequalities in labour markets and workplaces continue to influence earnings differences between men and women (International Labour Organization [ILO], 2024).
 
-Understanding the gender pay gap is very important, since it affects women' s job opportunities, financial independence and also long-term economic security. Lower earnings throughout a woman’s career can also lead to lower pension income and an increased risk of poverty later in life (European Commission, 2024). Also, wage inequality can have a negative impact on the economy because women may not always be able to fully use their skills and reach their full potential.
+Understanding the gender pay gap is very important, since it affects women's job opportunities, financial independence and also long-term economic security. Lower earnings throughout a woman’s career can also lead to lower pension income and an increased risk of poverty later in life (European Commission, 2024). Also, wage inequality can have a negative impact on the economy because women may not always be able to fully use their skills and reach their full potential.
 
 This study examines the gender pay gap across the EU by grouping Northern, Western, Southern, and Eastern European countries, and then comparing individual regions. Using wage, employment, and income data collected over multiple years, our research aims to identify regional patterns and trends in gender-based wage inequality. 
 
 # Part 2 - Data Sourcing
 
-## 2.1 Load in the data
-
 ```{r loading_data, include=FALSE}
-gpg_data <- get_eurostat("tesem180")
-salary_data <- get_eurostat("nama_10_fte")
-saveRDS(gpg_data, "data/gpg_data")
-saveRDS(salary_data, "data/salary_data")
-salary_data <- readRDS("data/salary_data")
-gpg_data <- readRDS("data/gpg_data")
+if (!file.exists("data/gpg_data.rds") | !file.exists("data/salary_data.rds")) {
+  dir.create("data", showWarnings = FALSE)
+  
+  gpg_data <- get_eurostat("tesem180")
+  salary_data <- get_eurostat("nama_10_fte")
+  
+  saveRDS(gpg_data, "data/gpg_data.rds")
+  saveRDS(salary_data, "data/salary_data.rds")
+}
+
+gpg_data <- readRDS("data/gpg_data.rds")
+salary_data <- readRDS("data/salary_data.rds")
 ```
 
-## 2.2 A short summary of the datasets we used
+## 2.1 A short summary of the datasets we used
 
 ## The gdp_data dataset summary:
 
@@ -79,6 +81,11 @@ The dataset “Gender pay gap in unadjusted form” comes from Eurostat. It meas
 - TIME_PERIOD: The data covers 2007 to 2024.
 - values: These represent the percentage difference in hourly wages between men and women.
 
+```{r, summary_gpg_data, echo=FALSE}
+summary(gpg_data)
+
+```
+
 ## The salary_data dataset summary:
 
 The dataset “Average full time adjusted salary per employee” comes from Eurostat. This dataset shows the average salary per employee (full-time adjusted), allowing fair comparisons between countries regardless of differences in part-time work. The dataset was last updated 7 months ago and contains 1,560 data cells.
@@ -88,17 +95,12 @@ The dataset “Average full time adjusted salary per employee” comes from Euro
 - geo: Includes 26 European countries and 2 additional aggregates, resulting in 28 unique geo entries. - TIME_PERIOD: The data covers the years from 1995 to 2024.
 - values: Salaries are expressed in EUR and national currency (NAC).
 
-```{r, summary_gpg_data, inlcude=FALSE}
-summary(gpg_data)
-
-```
-
-```{r summary_salary_data, include=FALSE}
+```{r summary_salary_data, echo=FALSE}
 summary(salary_data)
 
 ```
 
-## 2.3 Description of the type of variables included
+## 2.2 Description of the type of variables included in the datasets:
 
 ## Variables included in salary_data:
 
@@ -175,7 +177,7 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 
 **Variable 1 – `region`**
 
-- This is a categorical variable, which assigns each EU country to of of the four European regions: Northern, Western, Southern or Eastern Europe.
+- This is a categorical variable, which assigns each EU country to one of the four European regions: Northern, Western, Southern or Eastern Europe.
 
 - The classification we used follows the United Nations ‘geo-scheme’, and is aimed to uncover and show broader geographical patterns in the gender pay gap.
 
@@ -185,11 +187,11 @@ merged_data <- left_join(gpg_data, salary_data, by = c("geo", "TIME_PERIOD"))
 
 - This is a continuous variable, which translates the relative gender pay gap (which expressed as a percentage in the data-set) into an absolute difference in annual earning in euros between women and men.
 
-- It is calculated with the formula **`gpg_severity = (gpg / 100) * salary`**, where **`gpg`** is the unadjusted gender pay gap, expressed as a percentage, and **`salary`** is the average full-time adjusted salary per employee, expressed in Euros.
+- It is calculated with the formula **`gpg_severity = (gpg / 100) * salary`**, where **`gpg`** is the unadjusted gender pay gap, expressed as a percentage, and **`salary`** is the average full-time adjusted salary per employee, expressed in euros.
 
-- Thus, the resulting value gives us the approximate amount, in euros, by which the average annual earnings of women are lower than that of men.
+- Thus, the resulting value gives us the approximate amount in euros, by which the average annual earnings of women are lower than that of men.
 
-- The monetary severity this variable introduces to us, allows us to assess the economic impact on women across different European regions and associated years, which we would be unable to assess when only looking at the percentage gap indicating relative inequality.
+- The monetary severity this variable introduces to us allows us to assess the economic impact on women across different European regions and associated years, which we would be unable to assess when only looking at the percentage gap indicating relative inequality.
 
 **Sub-variable – `region_summary`**
 
@@ -250,7 +252,7 @@ plot_severity <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severi
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
-    title = "A: Average GPG Severity (EUR) \nover Time by European Region",
+    title = "1A: Average GPG Severity (EUR) \nover Time by European Region",
     x = "Year", y = "Mean GPG Severity in Euros", color = "Region"
   ) +
   theme_minimal() +
@@ -260,7 +262,7 @@ plot_percentage <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, col
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
-    title = "B: Average Gender Pay Gap in % \nover Time by European Region",
+    title = "1B: Average GPG in % \nover Time by European Region",
     x = "Year", y = "Mean GPG in %", color = "Region"
   ) +
   theme_minimal() +
@@ -271,20 +273,20 @@ plot_severity + plot_percentage +
   theme(legend.position = "bottom")
 ```
 
-**Plot A: Average Gender Pay Gap Severity in Euros over Time**
+**Plot 1A: Average Gender Pay Gap Severity in Euros over Time**
 
 - This plot shows the average/mean Gender Pay Gap Severity in Euros per Region per Year. GPG Severity, as we already discussed, shows the absolute gap in earnings between women relative to men, calculated with our formula: **`gpg_severity = (gpg / 100) * salary`**.
 
 - When we express this gap in monetary terms, as can be seen in this plot, the real economic disadvantage women face is highlighted. A higher line therefore indicates a larger absolute gap in earnings. Further, this plot also allows us to see whether the impact of the pay gap has been growing, decreasing or remained constant over time across European regions.
 
-**Plot B: Average Gender Pay Gap in % over Time**
+**Plot 1B: Average Gender Pay Gap in % over Time**
 
 - This plot shows us the average unadjusted Gender Pay Gap as a percentage for the same European regions. When assessing the pay gap in terms of percentages, it makes it easier for us to compare and see the relative inequality across the four European regions.
 - A declining line therefore suggests that the relative difference between women’s and men’s earnings is narrowing. We can also observe that despite different wage levels, such as between Eastern and Western Europe, these two regions have a similar pay gap relative to the associated incomes in those regions.
 
 **Relevance to the social problem**
 
-- Together, the tow plots shown above clearly separate the relative and the absolute dimensions of the Gender Pay Gap issue. Whilst an European region might show a shrinking percentage gap over time, the monetary severity still remains large, if salaries in that region are high (e.g.: See Western Europe). The observation of these trends over time will help us properly assess whether policy efforts from the EU, such as equal pay legislation, are effective, and whether economic changes and disruptions (e.g.: 2008 GFC, COVID-19) have affected the Gender Pay Gap in different ways across the EU.
+- Together, the two plots shown above clearly separate the relative and the absolute dimensions of the Gender Pay Gap issue. Whilst an European region might show a shrinking percentage gap over time, the monetary severity still remains large, if salaries in that region are high (e.g. Western Europe). The observation of these trends over time will help us properly assess whether policy efforts from the EU, such as equal pay legislation, are effective, and whether economic changes and disruptions (e.g. the 2008 GFC and COVID-19) have affected the Gender Pay Gap in different ways across the EU.
 
 ## 3.4 Visualisation of Spatial Variation
 
@@ -335,9 +337,9 @@ map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
       override.aes = list(size = 5, alpha = 1, shape = 22)  
     )
   ) +
-  coord_quickmap(xlim = c(-12, 32), ylim = c(35, 72)) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
   labs(
-    title = paste("A: GPG Severity in EU in", latest_year),
+    title = paste("2A: GPG Severity in EU in", latest_year),
     subtitle = "Absolute Gap in Earnings (women vs men)"
   ) +
   theme_void() +
@@ -365,9 +367,9 @@ map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
       override.aes = list(size = 5, alpha = 1, shape = 22)  
     )
   ) +
-  coord_quickmap(xlim = c(-12, 32), ylim = c(35, 72)) +
+  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
   labs(
-    title = paste("B: GPG Percentage in EU in", latest_year),
+    title = paste("2B: GPG % in EU in", latest_year),
     subtitle = "Percentage Difference \nin Average Earnings (women vs men)",
     #caption = "Source: Eurostat (tesem180)"
   ) +
@@ -380,13 +382,13 @@ map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
 map_severity + map_percent
 ```
 
-**Map A: Gender Pay Gap Severity in Euros**
+**Map 2A: Gender Pay Gap Severity in Euros**
 
 - The fill colour in this map shows the Gender Pay Gap Severity in Euros for each EU country. Darker purple indicates a larger absolute gap in earnings for women.
 
 - The map also directly shows us which countries are the main culprits behind this problem - i.e. which countries’ women experience the heaviest financial and economical penalty as a result of the Gender Pay Gap. Even if the percentage gap in those countries appears moderate (e.g. Sweden, which is a high salary economy), the severity is indeed still high in monetary terms.
 
-**Map B: Gender Pay Gap in %**
+**Map 2B: Gender Pay Gap in %**
 
 - The fill colour in this map shows the unadjusted Gender Pay Gap as a percentage for each EU country.
 
@@ -592,8 +594,8 @@ severity_covid_trend <- ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = mea
   ) +
   scale_x_continuous(breaks = 2017:2023) +
   labs(
-    title = "GPG Severity Trend \nBefore/After COVID-19",
-    # subtitle = "Average absolute gap (EUR)\nover time by European region, 2017-2023",
+    title = "3A: GPG Severity Trend \nBefore/After COVID-19",
+    subtitle = "Average absolute gap (EUR)\nover time by European region, 2017-2023",
     x = "Year",
     y = "Mean GPG Severity (EUR)",
     color = "Region"
@@ -634,8 +636,8 @@ percentage_covid_trend <- ggplot(covid_trend_summary, aes(x = TIME_PERIOD, y = m
     breaks = 2017:2023
   ) +
   labs(
-    title = "Gender Pay Gap Trend \nBefore and After COVID-19",
-    subtitle = "Average Gender Pay Gap (%) over time\nby European region, 2017-2023",
+    title = "3B: GPG % Trend \nBefore and After COVID-19",
+    subtitle = "Average percentage gap over time\nby European region, 2017-2023",
     x = "Year",
     y = "Mean GPG (%)",
     color = "Region"
@@ -657,19 +659,19 @@ In comparison, Northern Europe clearly shows the inequality in payment between t
 
 Western Europe shows the most noticeable improvement after COVID-19. Both the Gender Pay Gap percentage and euro-based GPG Severity decline over time. It is indicate that reduction in gender pay inequality in both relative and absolute terms. Eastern Europe presents a more complex pattern. Although the Gender Pay Gap percentage decreases, the actual salary gap continues to widen
 
-# Part 4 - Discussion
+# **Part 4 - Discussion**
 
-The main goal of this study is determining whether the gender pay gap actually differs across European regions, and whether things have changed over time. Using Eurostat data, we investigated whether regional differences exist and how they have shifted over time.
+The main goal of this study is determining whether the gender pay gap actually differs across European regions, and whether things have changed over time. Using Eurostat data, we investigated whether regional differences exist and how they have shifted over time. 
 
 As you can see within our research, what came out of it was clear: the gap hasn't gone away anywhere, but it looks very different depending on where you are. Western and Northern Europe tend to have the highest wages overall, yet that's also where the actual euro difference between what men and women take home tends to be biggest. Southern Europe flips that around a bit, smaller gaps and less income lost to inequality, even if average pay is lower across the board.
 
-Over the years covered, the gap has slowly narrowed, which is something at least. But no region has closed it completely, and that says something important: just growing the economy or pushing wages up isn't going to cut it on its own. 
+The gap has narrowed over the years, which is progress, but no region has actually closed it. This suggests that economic growth wages alone are not close enough to close the gap.
 
-**4.1 Interpretation of Finding**
+**4.1 Interpretation of Findings**
 
 Even the wealthiest regions haven't escaped big pay gaps in euro terms. Plenty of Western and Northern European countries score well on gender equality indexes. (European Commission, 2024)
 
-Occupational segregation likely explains a lot of this. Across Europe, men and women still cluster in different parts of the job market, men lean toward higher-paying fields like finance, tech, and engineering, while women are more often found in education, healthcare, and social work (European Institute for Gender Equality, 2023). That sorting alone can keep pay gaps alive even where strong equal-pay laws are on the books.
+Occupational segregation likely explains a lot of this. Across Europe, men and women still cluster in different parts of the job market, men lean toward higher-paying fields like finance, tech, and engineering, while women are more often found in education, healthcare, and social work (European Institute for Gender Equality, 2023). 
 
 None of this means location itself causes the gap. It's more that geography reflects a mix of institutional, economic, demographic, and cultural forces layered on top of each other. Earlier research points to things like childcare access, parental leave policies, how labour markets are structured, and broader social norms as key drivers of these outcomes for men and women (European Institute for Gender Equality, 2023). So the patterns here should be read as associations, not proof of cause and effect.
 
@@ -689,15 +691,15 @@ Going forward, it'd be worth digging into what's actually driving these regional
 
 It'd also help to compare the adjusted and unadjusted pay gap measures side by side, to tease apart how much of the gap can be explained by factors like job type or experience, and how much is left unexplained.
 
-All in all, there's still a lot to figure out here. More research is needed to really get a handle on what's keeping the gender pay gap alive across Europe, and to find approaches that might actually help close it.
+Ultimately, the gender pay gap in Europe is a long way from being solved. Understanding what's really driving it (and what might actually reduce it) requires more research, more nuanced data, and a willingness to look beyond surface-level trends. Progress has been made, but the work is far from done.
 
 # Part 5 - Reproducibility
 
-## 5.1 Github repository link
+## 5.1: Github repository link
 
 Public GitHub Repository Link: <https://github.com/YessicaR-lab/ProgrammingForEcon>
 
-## 5.2 Reference list
+## 5.2: Reference list
 
 Blau, F. D., & Kahn, L. M. (2017). The gender wage gap: Extent, trends, and explanations. *Journal of Economic Literature, 55*(3), 789–865. <https://doi.org/10.1257/jel.20160995>
 

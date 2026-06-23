@@ -16,6 +16,7 @@ output: pdf_document
 #install.packages("patchwork")
 #install.packages("renv")
 #install.packages("dplyr")
+#install.packages("ggnewscale")
 ```
 
 ```{r packages, include=FALSE}
@@ -26,6 +27,7 @@ require(eurostat)
 require(maps)
 require(patchwork)
 require(dplyr)
+require(ggnewscale)
 ```
 
 # Title Page
@@ -270,7 +272,7 @@ plot_severity <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg_severi
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
-    title = "Average GPG Severity (EUR) \nover Time by European Region",
+    title = "A: Average GPG Severity (EUR) \nover Time by European Region",
     x = "Year", y = "Mean GPG Severity in Euros", color = "Region"
   ) +
   theme_minimal() +
@@ -280,7 +282,7 @@ plot_percentage <- ggplot(region_summary, aes(x = TIME_PERIOD, y = mean_gpg, col
   geom_line(linewidth = 1.2) +
   geom_point(size = 2) +
   labs(
-    title = "Average Gender Pay Gap in % \nover Time by European Region",
+    title = "B: Average Gender Pay Gap in % \nover Time by European Region",
     x = "Year", y = "Mean GPG in %", color = "Region"
   ) +
   theme_minimal() +
@@ -345,18 +347,27 @@ europe_map <- europe_map %>%
   left_join(gpg_latest, by = c("region" = "country_name"))
 
 
-
-map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg_severity)) +
-  geom_polygon(colour = "white", linewidth = 0.2) +
+map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = gpg_severity), colour = "white", linewidth = 0.2) +
   scale_fill_gradientn(
     colours = c("#fde725", "#21918c", "#440154"),
-    name = "GPG Severity (€)"
+    name = "GPG Severity (€)",
+    na.value = "grey70"    
+  ) +
+  new_scale_fill() +
+  geom_point(aes(x = -Inf, y = -Inf, fill = "Missing"),
+             size = 0, stroke = 0, shape = 21, alpha = 0) +
+  scale_fill_manual(
+    values = c("Missing" = "grey70"),
+    name = NULL,   
+    guide = guide_legend(
+      override.aes = list(size = 5, alpha = 1, shape = 22)  
+    )
   ) +
   coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
   labs(
-    title = paste("GPG Severity in", latest_year),
-    subtitle = "Absolute Gap in Earnings (women vs men)",
-    #caption = "Source: Eurostat (tesem180 & nama_10_fte)"
+    title = paste("A: GPG Severity in EU in", latest_year),
+    subtitle = "Absolute Gap in Earnings (women vs men)"
   ) +
   theme_void() +
   theme(
@@ -374,7 +385,7 @@ map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = g
   ) +
   coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
   labs(
-    title = paste("GPG Percentage in", latest_year),
+    title = paste("B: GPG Percentage in EU in", latest_year),
     subtitle = "Percentage Difference \nin Average Earnings (women vs men)",
     #caption = "Source: Eurostat (tesem180)"
   ) +
@@ -649,20 +660,58 @@ Western Europe shows the most noticeable improvement after COVID-19. Both the Ge
 
 # Part 4 - Discussion
 
-4.1 Interpretation of Findings One of the more striking results is that some of Europe's wealthiest regions still face real financial consequences from the gender wage gap. Western and Northern European countries usually score well on broader equality measures, but because their average salaries are so high, even a modest percentage gap can add up to a big difference in actual earnings. This lines up with earlier research arguing that prosperity alone doesn't guarantee fair pay. Inequalities can stick around even in highly developed economies (European Commission, 2024). Part of the explanation likely comes down to occupational segregation. Across Europe, men and women are still spread unevenly across different sectors. Better-paying fields like finance, tech, and engineering remain male-dominated, while women are overrepresented in areas such as education, healthcare, and social services. As a result, pay gaps can linger even where strong equal-pay laws are in place. These patterns don't mean that a region's location itself causes the pay gap. What we're seeing more likely reflects a mix of institutional, economic, demographic, and cultural factors—things like childcare access, parental leave, education levels, labour market flexibility, and social norms. So these results are best read as associations, not proof of cause and effect.
+The main goal of this study is determining whether the gender pay gap actually differs across European regions, and whether things have changed over time. Using Eurostat data, we investigated whether regional differences exist and how they have shifted over time. 
 
-4.2 Limitations Several limitations should be considered when interpreting these findings. First, the study uses Eurostat's unadjusted gender pay gap measure, which does not account for factors such as education, occupation, work experience, or hours worked. As a result, the analysis cannot determine whether observed wage differences are driven by discrimination or other labour market characteristics. Second, the data is aggregated at the country level. While this helps identify broad regional patterns, it may mask important differences between individuals, industries, and firms within countries. In addition, grouping countries into broad regions simplifies comparison but may overlook significant variation between countries with different labour market structures, welfare systems, and social norms. Finally, this study identifies patterns and associations rather than causal relationships. Although regional differences are observed, other unmeasured factors may influence both salary levels and gender pay gap outcomes. Therefore, the results should be interpreted with caution.
+As you can see within our research, what came out of it was clear: the gap hasn't gone away anywhere, but it looks very different depending on where you are. Western and Northern Europe tend to have the highest wages overall, yet that's also where the actual euro difference between what men and women take home tends to be biggest. Southern Europe flips that around a bit, smaller gaps and less income lost to inequality, even if average pay is lower across the board.
 
-4.3 Suggestions for Future Research Future research could build on this study by exploring additional factors that may influence the gender pay gap, such as education levels, labour force participation, childcare availability, and parental leave policies. Examining individual countries rather than broad regions could also provide a more detailed understanding of national differences. In addition, comparing adjusted and unadjusted gender pay gap measures may help distinguish between labour market characteristics and unexplained wage disparities. Finally, using more advanced statistical methods could provide stronger evidence on whether specific policies contribute to reducing gender wage inequality. Overall, further research is needed to better understand the factors that continue to shape gender pay differences across Europe.
+Over the years covered, the gap has slowly narrowed, which is something at least. But no region has closed it completely, and that says something important: just growing the economy or pushing wages up isn't going to cut it on its own. 
+
+**4.1 Interpretation of Finding**
+
+Even the wealthiest regions haven't escaped big pay gaps in euro terms. Plenty of Western and Northern European countries score well on gender equality indexes. (European Commission, 2024)
+
+Occupational segregation likely explains a lot of this. Across Europe, men and women still cluster in different parts of the job market, men lean toward higher-paying fields like finance, tech, and engineering, while women are more often found in education, healthcare, and social work (European Institute for Gender Equality, 2023). That sorting alone can keep pay gaps alive even where strong equal-pay laws are on the books.
+
+None of this means location itself causes the gap. It's more that geography reflects a mix of institutional, economic, demographic, and cultural forces layered on top of each other. Earlier research points to things like childcare access, parental leave policies, how labour markets are structured, and broader social norms as key drivers of these outcomes for men and women (European Institute for Gender Equality, 2023). So the patterns here should be read as associations, not proof of cause and effect.
+
+**4.2 Limitations**
+
+A few limitations are worth flagging. First, we relied on Eurostat's unadjusted pay gap figure, which doesn't account for things like education, occupation, work experience, or career breaks. That means we can't really say how much of the gap comes down to discrimination versus differences in who's working where (Eurostat, 2024).
+
+Second, the data is country-level and aggregated, which is great for spotting broad regional patterns but glosses over what's happening within countries, pay gaps can swing widely by industry, company, or demographic group, so national averages only tell part of the story.
+
+Lumping countries into four regions also simplifies things in a way that might hide real institutional and economic differences between, say, Germany and Sweden, or Italy and Greece. Welfare systems, labour policies, and cultural attitudes toward gender roles vary a lot across Europe, and regional buckets can't fully account for that.
+
+Lastly, this is a pattern-spotting study, not a causal one. The regional differences are real, but other unmeasured factors could be shaping both wage levels and the pay gap itself, so the results should be read with that caveat in mind.
+
+**4.3 Suggestions for Future Research**
+
+Going forward, it'd be worth digging into what's actually driving these regional differences, things like education levels, labour force participation, childcare access, and parental leave setups. Zooming in on individual countries could also shed light on how specific labour markets work and whether certain policies are actually moving the needle.
+
+It'd also help to compare the adjusted and unadjusted pay gap measures side by side, to tease apart how much of the gap can be explained by factors like job type or experience, and how much is left unexplained.
+
+All in all, there's still a lot to figure out here. More research is needed to really get a handle on what's keeping the gender pay gap alive across Europe, and to find approaches that might actually help close it.
 
 # Part 5 - Reproducibility
 
 ## 5.1 Github repository link
 
-Provide the link to your PUBLIC repository here: ...
+Public GitHub Repository Link: <https://github.com/YessicaR-lab/ProgrammingForEcon>
 
 ## 5.2 Reference list
 
-Use APA referencing throughout your document.
+Blau, F. D., & Kahn, L. M. (2017). The gender wage gap: Extent, trends, and explanations. *Journal of Economic Literature, 55*(3), 789–865. <https://doi.org/10.1257/jel.20160995>
 
-include=FALSE -\> to be used when we want to hide code
+European Commission. (2024a). *Gender equality strategy*. <https://commission.europa.eu/strategy-and-policy/policies/justice-and-fundamental-rights/gender-equality/gender-equality-strategy_en>
+
+European Commission. (2024b). *2024 Report on Gender Equality in the European Union*. European Commission.
+
+European Institute for Gender Equality. (2023). *Gender Equality Index 2023: Towards a green transition in transport and energy*. EIGE.
+
+Eurostat. (2024). *Gender pay gap statistics*. <https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Gender_pay_gap_statistics>
+
+Eurostat. (n.d.). *Average full-time adjusted salary per employee (nama_10_fte)* [Data set]. <https://ec.europa.eu/eurostat/databrowser/view/nama_10_fte__custom_13597179/bookmark/table?lang=en&bookmarkId=c29eed24-377e-4763-aaf0-0419906d2ecd>
+
+Eurostat. (n.d.). *Gender pay gap in unadjusted form (tesem180)* [Data set]. <https://ec.europa.eu/eurostat/databrowser/view/tesem180/default/table?lang=en>
+
+International Labour Organization. (2024). *Global wage report 2024–25*. <https://www.ilo.org/publications>

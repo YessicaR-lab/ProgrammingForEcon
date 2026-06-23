@@ -128,7 +128,13 @@ summary(salary_data)
 
 ## 3.1 Data cleaning
 
-In this section, we clean the Gender Pay Gap and salary datasets to prepare them for analysis. First, we check for missing values and remove incomplete observations, since missing data could affect the reliability of our results. Then, we keep only the variables needed for the analysis: country, year, and values. For the salary dataset, we keep only observations measured in euros (EUR) so that the salary values are comparable. We also remove aggregate regions such as EA19, EA20, and EU27_2020 because our analysis focuses on individual European countries. Finally, we rename the value variables and merge the two datasets by country and year.
+In this section, we clean the Gender Pay Gap and salary datasets to prepare them for analysis. First, we check for missing values and remove incomplete In this section, we clean the Gender Pay Gap and salary datasets using several data cleaning steps to improve data quality and comparability before conducting the analysis. Firstly, we remove missing values because they may affect the reliability of the results.However, this also reduces the sample size, potentially affecting the accuracy of the results.
+
+Secondly, we keep only the variables needed for the analysis: country, year, and values. For the salary dataset part, we retain only observations reported in euros (EUR). This ensures that all salary values are expressed in a common currency and can be compared consistently across countries.
+
+Thirdly,we removed aggregate regions such as EA19, EA20, and EU27_2020 because our analysis focuses on individual European countries. This helps avoid double counting and makes regional comparisons clearer. However, it also means that our results cannot be directly compared to EU-wide averages
+
+Finally, we renamed the value variables and merged the Gender Pay Gap and salary datasets by country and year. This allowed us to calculate GPG Severity, although only observations available in both datasets could be retained in the final dataset.
 
 ```{r missing_values, include=FALSE}
 colSums(is.na(gpg_data))

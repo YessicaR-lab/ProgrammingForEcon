@@ -649,7 +649,7 @@ Western Europe shows the most noticeable improvement after COVID-19. Both the Ge
 
 # Part 4 - Discussion
 
-The main goal of this study is determining whether the gender pay gap actually differs across European regions, and whether things have changed over time. Using Eurostat data, we investigated whether regional differences exist and how they have shifted over time. 
+The main goal of this study is determining whether the gender pay gap actually differs across European regions, and whether things have changed over time. Using Eurostat data, we investigated whether regional differences exist and how they have shifted over time.
 
 As you can see within our research, what came out of it was clear: the gap hasn't gone away anywhere, but it looks very different depending on where you are. Western and Northern Europe tend to have the highest wages overall, yet that's also where the actual euro difference between what men and women take home tends to be biggest. Southern Europe flips that around a bit, smaller gaps and less income lost to inequality, even if average pay is lower across the board.
 

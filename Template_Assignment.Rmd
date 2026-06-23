@@ -339,11 +339,22 @@ map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
 
 #OTHER MAP ===============================================
 
-map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group, fill = gpg)) +
-  geom_polygon(colour = "white", linewidth = 0.2) +
+map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = gpg), colour = "white", linewidth = 0.2) +
   scale_fill_gradientn(
     colours = c("#fde725", "#21918c", "#440154"),
-    name = "GPG (%)"
+    name = "GPG (%)",
+    na.value = "grey70"  
+  ) + 
+  new_scale_fill() +
+  geom_point(aes(x = -Inf, y = -Inf, fill = "Missing"),
+             size = 0, stroke = 0, shape = 21, alpha = 0) +
+  scale_fill_manual(
+    values = c("Missing" = "grey70"),
+    name = NULL,   
+    guide = guide_legend(
+      override.aes = list(size = 5, alpha = 1, shape = 22)  
+    )
   ) +
   coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
   labs(

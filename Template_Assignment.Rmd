@@ -335,7 +335,7 @@ map_severity <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
       override.aes = list(size = 5, alpha = 1, shape = 22)  
     )
   ) +
-  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
+  coord_quickmap(xlim = c(-12, 32), ylim = c(35, 72)) +
   labs(
     title = paste("A: GPG Severity in EU in", latest_year),
     subtitle = "Absolute Gap in Earnings (women vs men)"
@@ -365,7 +365,7 @@ map_percent <- ggplot(europe_map, aes(x = long, y = lat, group = group)) +
       override.aes = list(size = 5, alpha = 1, shape = 22)  
     )
   ) +
-  coord_quickmap(xlim = c(-25, 45), ylim = c(35, 70)) +
+  coord_quickmap(xlim = c(-12, 32), ylim = c(35, 72)) +
   labs(
     title = paste("B: GPG Percentage in EU in", latest_year),
     subtitle = "Percentage Difference \nin Average Earnings (women vs men)",
@@ -400,9 +400,9 @@ map_severity + map_percent
 
 ## 3.5 Visualize sub-population variation
 
-The boxplot illustrates the distribution of the Gender Pay Gap across four European regions in 2024.By presenting both the median and mean values for each region, the figure provides a clearer basis for comparing regional patterns of gender pay inequality across Europe.
+The boxplot illustrates the distribution of the Gender Pay Gap across four European regions in 2024. By presenting both the median and mean values for each region, the figure provides a clearer basis for comparing regional patterns of gender pay inequality across Europe.
 
-```{r visualise_subpopulations, echo=FALSE}
+```{r visualise_subpopulations,echo=FALSE,fig.width=6,fig.height=3,fig.align='center'}
 gpg_latest %>%
   ggplot(aes(x = region, y = gpg, fill = region)) +
   geom_boxplot(alpha = 0.8) +

@@ -47,3 +47,15 @@ To bridge the gap between relative inequality and real-world economic harm, we e
 - **Spatial Analysis**: Choropleth maps highlighting "hotspots" of inequality across the EU.
 - **Event Analysis**: Pre/Post COVID-19 comparison (2019 vs 2021) to assess the pandemic's impact on gender wage gaps.
 - **Sub-population Variation**: Boxplots to visualize the spread and medians of GPG within each region.
+
+## 🖥️ Repository Structure
+
+```bash
+├── ProgrammingForEcon.Rproj      # RStudio project file (Open this first!)
+├── Template_Assignment.Rmd       # Main RMarkdown file with all code & narrative
+├── Template_Assignment.pdf       # Knitted PDF of the final report
+├── renv.lock                     # Locks exact package versions for reproducibility
+├── .Rprofile                     # renv auto-loader
+├── run_all.R                     # Helper script to run everything
+├── data/                         # Cached Eurostat data (.rds) - auto-generated
+└── README.md                     # This file

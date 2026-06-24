@@ -243,7 +243,7 @@ region_summary <- merged_data %>%
     .groups = "drop")
 ```
 
-## 3.3 Visualize temporal variation
+## 3.3 Visualisation of Temporal Variation
 
 The graph for Visualisation of Temporal Variation consists of two line plots. The evolution of the Gender Pay Gap over time (x-axis) for the four European regions (coloured lines) is shown in both graphs.
 
@@ -400,7 +400,7 @@ map_severity + map_percent
 
 - By comparing the two maps, we can see that the Gender Pay Gap is indeed not uniform across the EU, and that effective policies must certainly take into consideration the relative gap (GPG in %) experienced and the absolute economic harm (GPG Severity) done to women. Furthermore, our maps enable quick identification of ‘GPG Hotspots’, which require more urgent attention.
 
-## 3.5 Visualize sub-population variation
+## 3.5 Visualisation of  Sub-population Variation
 
 The boxplot illustrates the distribution of the Gender Pay Gap across four European regions in 2024. By presenting both the median and mean values for each region, the figure provides a clearer basis for comparing regional patterns of gender pay inequality across Europe.
 
@@ -442,7 +442,7 @@ It is clearly shown that Northern Europe has the highest median Gender Pay Gap w
 
 In conclusion, these results show that the Gender Pay Gap is not evenly distributed across Europe, which makes the analysis relevant to the social issue of gender pay inequality. Regional differences may reflect variations in labour market structures, economic conditions, and social policies. In addition, the wide range observed in Western Europe suggests that regional averages may not fully represent the experiences of individual countries
 
-## 3.6 Event analysis
+## 3.6 Visualisation of Event analysis
 
 This event analysis examines the Gender Pay Gap before and after the COVID-19 . The dashed vertical line represents the year 2020, when COVID-19 began to significantly affect European labour markets. Comparing the trends before and after this event helps us understand whether the pandemic was associated with changes in gender pay inequality
 
